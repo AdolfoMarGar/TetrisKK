@@ -209,6 +209,9 @@ function resetGame() {
   gameOverState = false;
   currentMovementTimer = 0;
   points = 0;
+  lines_done = 0;
+  display_points.textContent=points.toString();
+  display_lines.textContent=lines_done.toString();
 
   // Create Trellis and initialisation of its grid
   theTetris = new Tetris();
