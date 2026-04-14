@@ -198,6 +198,13 @@ let shade, centerText;
 let points = 0, lines_done = 0;
 const display_points = document.getElementById("puntos");
 const display_lines = document.getElementById("lines");
+const Player_name = document.getElementById("player");
+Player_name.addEventListener('click',function(){
+  let newName = prompt("Give new name: ", Player_name.textContent);
+  if (newName !== null && newName.trim() !== ""){
+    Player_name.textContent=newName;
+  }
+});
 
 
 // Reinicia estado, tablero, HUD, input, temporizador y puntos para empezar una partida limpia.
