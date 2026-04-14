@@ -195,9 +195,12 @@ let gameOverState = false;
 let timer, loop;
 let currentMovementTimer = 0;
 let shade, centerText;
+let points = 0, lines_done = 0;
+const display_points = document.getElementById("puntos");
+const display_lines = document.getElementById("lines");
 
 
-// Reinicia estado, tablero, HUD, input y temporizador para empezar una partida limpia.
+// Reinicia estado, tablero, HUD, input, temporizador y puntos para empezar una partida limpia.
 function resetGame() {
   // clear all blocks
   game.world.removeAll();
@@ -205,6 +208,7 @@ function resetGame() {
   // initialisation
   gameOverState = false;
   currentMovementTimer = 0;
+  points = 0;
 
   // Create Trellis and initialisation of its grid
   theTetris = new Tetris();
@@ -342,8 +346,13 @@ function checkLines(candidateLines) {
       cleanLine(y);
     }
   }
-  if (collapsed.length)
+  if (collapsed.length){
     collapse(collapsed);
+    lines_done+=collapsed.length;
+    points += 10*collapsed.length;
+    display_points.textContent=points.toString();
+    display_lines.textContent=lines_done.toString();
+  }
 };
 
 // Suma el estado de una fila para detectar si está completamente ocupada.
