@@ -46,7 +46,6 @@ class Tetris {
   }
 }
 
-let nextTetromino;
 class Tetromino {
   constructor(shape, color, tetris) {
     this.shape = shape;
@@ -68,19 +67,19 @@ class Tetromino {
         [0, 0],
         [0, 1],
         [-1, 1],
-      ], // J
+      ], // J //for
       2: [
         [-1, 0],
         [0, 0],
         [1, 0],
         [2, 0],
-      ], // I
+      ], // I //forma de I
       3: [
         [-1, -1],
         [0, -1],
         [0, 0],
         [-1, 0],
-      ], // O
+      ], // O Forma cuadrada
       4: [
         [-1, 0],
         [0, 0],
@@ -136,6 +135,17 @@ class Tetromino {
       }
     }
     return conflict;
+  }
+  createPreview(c_x, c_y) {
+    this.center = [c_x, c_y];
+    for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
+      let x_preview = c_x + this.offsets[this.shape][i][0];
+      let y_preview = c_y + this.offsets[this.shape][i][1];
+
+      let b_preview = this.renderBlock();
+      b_preview.x = x_preview * BLOCKSIZE; // Posición correcta
+      b_preview.y = y_preview * BLOCKSIZE;
+    }
   }
 
   // Verifica si la pieza puede moverse/rotar sin salirse del tablero ni chocar con bloques ocupados.
@@ -214,7 +224,7 @@ let gameState = {
 };
 
 let bg;
-let gameWidthExtra = BLOCKSIZE * 4; //Dibujar aquí elementos extra
+let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = NUMBLOCKS_X * BLOCKSIZE;
 let gameHeight = NUMBLOCKS_Y * BLOCKSIZE;
 
@@ -227,7 +237,7 @@ let move_offsets = {
 };
 
 // Dibuja el fondo de la zona de previsualización en negro
-function renderBlockPreview() {
+function unrenderBlockPreview() {
   // 1. Situamos el contenedor justo donde termina el área de juego
   let f = game.add.graphics(gameWidth, 0);
 
@@ -246,7 +256,7 @@ function renderBlockPreview() {
 let tetromino, theTetris;
 let cursors, keyRotate, keyRestart;
 let gameOverState = false;
-
+let nextForma = null;
 let timer, loop;
 let currentMovementTimer = 0;
 let shade, centerText;
@@ -274,7 +284,7 @@ function resetGame() {
   lines_done = 0;
   display_points.textContent = points.toString();
   display_lines.textContent = lines_done.toString();
-
+  nextForma = null;
   // Create Trellis and initialisation of its grid
   theTetris = new Tetris();
   theTetris.initGrid();
@@ -324,26 +334,26 @@ function fall() {
 
 // Crea una nueva pieza en la parte superior; si colisiona al aparecer, termina la partida.
 function spawn() {
-  let shape = Math.floor(Math.random() * N_BLOCK_TYPES);
-  let color = PIECE_COLOR;
+  if (nextForma === null) {
+    nextForma = Math.floor(Math.random() * N_BLOCK_TYPES);
+  }
 
+  let shape = nextForma;
+  let color = PIECE_COLOR;
   tetromino = new Tetromino(shape, color, theTetris);
 
   let start_x = Math.floor(NUMBLOCKS_X / 2);
   let start_y = y_start[tetromino.shape];
-  let conflict = tetromino.create(start_x, start_y);
-
-  // Create next tetromino for preview
-  let next_shape = Math.floor(Math.random() * N_BLOCK_TYPES);
-  nextTetromino = new Tetromino(next_shape, color, theTetris);
+  nextForma = Math.floor(Math.random() * N_BLOCK_TYPES);
 
   // Destroy previous preview blocks
-  renderBlockPreview();
+  unrenderBlockPreview();
 
   // Position preview in the extra area (gameWidth + offset for centering)
   let preview_x = NUMBLOCKS_X + 2;
-  let preview_y = y_start[next_shape];
-  nextTetromino.create(preview_x, preview_y+1);
+  let previweTetromino = new Tetromino(nextForma, color, theTetris);
+  previweTetromino.createPreview(preview_x, 2);
+  let conflict = tetromino.create(start_x, start_y);
 
   if (conflict) setGameOver(true);
 }
