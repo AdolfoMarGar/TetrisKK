@@ -4,6 +4,7 @@ const NUMBLOCKS_X = 10; // classic width
 const NUMBLOCKS_Y = 20; // classic height
 const MOVEMENT_LAG = 85; // ms (soft key repeat)
 const INITIAL_FALL_DELAY = 600; // ms
+const HUD = document.getElementsByClassName("HUD"); //References the HUD elements.
 
 // 7 tetrominoes, rotation around a center cell
 const BLOCKS_PER_TETROMINO = 4;
@@ -274,6 +275,9 @@ Player_name.addEventListener("click", function () {
 
 // Reinicia estado, tablero, HUD, input, temporizador y puntos para empezar una partida limpia.
 function resetGame() {
+  for (const h of HUD) {
+    h.style.display = "block";
+  }
   // clear all blocks
   game.world.removeAll();
 
