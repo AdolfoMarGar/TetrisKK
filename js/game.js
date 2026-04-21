@@ -10,7 +10,24 @@ const BLOCKS_PER_TETROMINO = 4;
 const N_BLOCK_TYPES = 7;
 
 // Color de las piezas: blanco
-const PIECE_COLOR = 0xffffff;
+const COLOR_BLANCO = 0xffffff;
+const COLOR_NEGRO = 0x000000;
+const COLOR_VERDE = 0x00ff00;
+const COLOR_AZUL = 0x0000ff;
+const COLOR_ROJO = 0xff0000;
+const COLOR_AMARILLO = 0xffff00;
+const COLOR_NARANJA = 0xffa500;
+const COLOR_PURPURA = 0x800080;
+const COLOR_CYAN = 0x00ffff;
+const COLOR_TETROMINO = {
+  0: COLOR_AZUL,
+  1: COLOR_ROJO,
+  2: COLOR_VERDE,
+  3: COLOR_AMARILLO,
+  4: COLOR_NARANJA,
+  5: COLOR_PURPURA,
+  6: COLOR_CYAN,
+};
 
 // Scene grid values
 const EMPTY = 0;
@@ -103,9 +120,9 @@ class Tetromino {
 
   // Dibuja el bloque mediante Graphics de Phaser (sin sprites), con un pequeño margen
   // respecto a la rejilla.
-  renderBlock() {
+  renderBlock(color) {
     let g = game.add.graphics(0, 0);
-    g.beginFill(this.color, 1);
+    g.beginFill(color, 1);
     // tiny inset with regard to the grid
     let m = 1;
     g.drawRect(m, m, BLOCKSIZE - 2 * m, BLOCKSIZE - 2 * m);
@@ -120,8 +137,9 @@ class Tetromino {
     for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
       let x = c_x + this.offsets[this.shape][i][0];
       let y = c_y + this.offsets[this.shape][i][1];
+      let color = COLOR_TETROMINO[this.shape];
 
-      let b = this.renderBlock();
+      let b = this.renderBlock(color);
       b.x = x * BLOCKSIZE;
       b.y = y * BLOCKSIZE;
 
@@ -141,8 +159,9 @@ class Tetromino {
     for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
       let x_preview = c_x + this.offsets[this.shape][i][0];
       let y_preview = c_y + this.offsets[this.shape][i][1];
+      let color = COLOR_TETROMINO[this.shape];
 
-      let b_preview = this.renderBlock();
+      let b_preview = this.renderBlock(color);
       b_preview.x = x_preview * BLOCKSIZE; // Posición correcta
       b_preview.y = y_preview * BLOCKSIZE;
     }
@@ -242,7 +261,7 @@ function unrenderBlockPreview() {
   let f = game.add.graphics(gameWidth, 0);
 
   // 2. Definimos el color negro
-  f.beginFill(0x000000, 1);
+  f.beginFill(COLOR_BLANCO, 1);
 
   // 3. Dibujamos desde el (0,0) LOCAL del objeto Graphics.
   // El ancho debe ser solamente el extra, no la suma.
@@ -339,7 +358,7 @@ function spawn() {
   }
 
   let shape = nextForma;
-  let color = PIECE_COLOR;
+  let color = COLOR_BLANCO;
   tetromino = new Tetromino(shape, color, theTetris);
 
   let start_x = Math.floor(NUMBLOCKS_X / 2);
