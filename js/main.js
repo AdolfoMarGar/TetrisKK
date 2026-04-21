@@ -1,6 +1,5 @@
 const ANCHO_MENU=1200;
 const ALTO_MENU= 620;
-
 let menuState={
     preload: function(){
         
@@ -12,12 +11,16 @@ let menuState={
         let fondo = game.add.sprite(0, 0, "fondo");
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
-        let boton1 = game.add.button(game.world.centerX, game.world.centerY, 'play1', this.iniciarJuego, this);
-        boton1.anchor.setTo(0.5,0.5);
+        let botonplay = game.add.button(game.world.centerX-250, game.world.centerY-50, 'play1', this.iniciarJuego, this);
+        botonplay.anchor.setTo(0.5,0.5);
         
-        let boton2=game.add.button(game.world.centerX, game.world.centerY + 50, 'play1', this.verCreditos, this);
-        boton2.anchor.setTo(0.5,0,5);
+        let botoncred=game.add.button(game.world.centerX-250, game.world.centerY +80, 'play1', this.verCreditos, this);
+        botoncred.anchor.setTo(0.5,0,5);
 
+        let botonniv=game.add.button(game.world.centerX+250, game.world.centerY-110 , 'play1', this.verNiveles, this);
+        botonniv.anchor.setTo(0.5,0,5);
+
+        let botonrank=game.add.button(game.world.centerX+250, game.world.centerY +80, 'play1', this.verCreditos, this);
 
         
         let estitulo = {font: "100px Arial", fill:"#FF00FF" , align:"center"}
@@ -31,7 +34,8 @@ let menuState={
     },
     verCreditos: function(){
         game.state.start('Creditos');
-    }
+    },
+
 };
 let creditosState={
     create : function(){
@@ -49,6 +53,20 @@ let creditosState={
     },
     volverMenu : function(){
         game.state.start('Menu'); 
+        let fondo = game.add.sprite(0, 0, "fondo");
+        fondo.width = ANCHO_MENU;
+        fondo.height = ALTO_MENU;
+        let estitulo = {font: "100px Arial", fill:"#f5ee1b" , align:"center"}
+        let titulo= game.add.text(game.world.centerX - 100, 100,"NIVELES",estitulo);
+        titulo.anchor.setTo(0.2, 0.5);
+        let botonVolver2 = game.add.button(game.world.centerX, game.world.centerY+220, 'play1', this.volverMenu, this);
+        botonVolver2.anchor.setTo(0.5,0.5);
+
+    }
+};
+let nivelesState={
+    create : function(){
+
     }
 }
 
