@@ -26,7 +26,7 @@ let menuState={
 
     },
     iniciarJuego : function(){
-        game.scale.setGameSize(gameWidth, gameHeight);
+        game.scale.setGameSize(gameWidth+gameWidthExtra, gameHeight);
         game.state.start('Game');
     },
     verCreditos: function(){
