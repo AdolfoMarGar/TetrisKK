@@ -371,7 +371,7 @@ function setGameOver(on) {
     centerText = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      "GAME OVER\n\nPress R to restart",
+      "GAME OVER\nPress R to restart\n\nTotal Points: " + points.toString() +"\nLines Destroyed: " + lines_done.toString() + "\nPlayer: " + Player_name.textContent,
       {
         font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
         fill: "#ffffff",
