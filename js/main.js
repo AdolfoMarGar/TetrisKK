@@ -1,3 +1,6 @@
+const ANCHO_MENU=1200;
+const ALTO_MENU= 620;
+
 let menuState={
     preload: function(){
         
@@ -5,14 +8,14 @@ let menuState={
         game.load.image("play1","assets/play1.png");
     },
     create: function(){
-        game.scale.setGameSize(window.innerWidth, window.innerHeight);
+       // game.scale.setGameSize(window.innerWidth, window.innerHeight);
         let fondo = game.add.sprite(0, 0, "fondo");
-        fondo.width = game.width;
-        fondo.height = game.height;
+        fondo.width = ANCHO_MENU;
+        fondo.height = ALTO_MENU;
         let boton1 = game.add.button(game.world.centerX, game.world.centerY, 'play1', this.iniciarJuego, this);
         boton1.anchor.setTo(0.5,0.5);
         
-        let boton2=game.add.button(game.world.centerX, game.world.centerY + 100, 'play1', this.verCreditos, this);
+        let boton2=game.add.button(game.world.centerX, game.world.centerY + 50, 'play1', this.verCreditos, this);
         boton2.anchor.setTo(0.5,0,5);
 
 
@@ -32,16 +35,16 @@ let menuState={
 };
 let creditosState={
     create : function(){
-        game.scale.setGameSize(window.innerWidth, window.innerHeight);
+        //game.scale.setGameSize(window.innerWidth, window.innerHeight);
         let fondo = game.add.sprite(0, 0, "fondo");
-        fondo.width = game.width;
-        fondo.height = game.height;
+        fondo.width = ANCHO_MENU;
+        fondo.height = ALTO_MENU;
         let estitulo = {font: "100px Arial", fill:"#1be6f5" , align:"center"}
-        let titulo= game.add.text(game.world.centerX - 100, 100,"CREDITOS",estitulo);
+        let titulo= game.add.text(game.world.centerX - 100, 100,"CRÉDITOS",estitulo);
         titulo.anchor.setTo(0.2, 0.5);
-        let botonVolver = game.add.button(game.world.centerX, game.world.centerY+250, 'play1', this.volverMenu, this);
+        let botonVolver = game.add.button(game.world.centerX, game.world.centerY+220, 'play1', this.volverMenu, this);
         botonVolver.anchor.setTo(0.5,0.5);
-        let txtCred = game.add.text(game.world.centerX, game.world.centerY, "Nombres: jsjdjwjoew\n jskfwfjs \n dsjdqhdhahdoa", { font: "20px Arial", fill: "#000" });
+        let txtCred = game.add.text(game.world.centerX, game.world.centerY, "Adolfo A. Martinez García\nIker Bélles Barreda\nValeria F. Berrospi Escobar ", { font: "20px Arial", fill: "#000" });
         txtCred.anchor.setTo(0.5,0.5);
     },
     volverMenu : function(){
@@ -49,7 +52,7 @@ let creditosState={
     }
 }
 
-let game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'game');
+let game = new Phaser.Game(ANCHO_MENU, ALTO_MENU, Phaser.CANVAS, 'game');
 game.state.add("Menu",menuState);
 game.state.add('Game', gameState);
 game.state.add("Creditos",creditosState);
