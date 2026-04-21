@@ -11,6 +11,7 @@ const N_BLOCK_TYPES = 7;
 
 // Color de las piezas: blanco
 const COLOR_BLANCO = 0xffffff;
+const COLOR_GRIS = 0xc0c0c0;
 const COLOR_NEGRO = 0x000000;
 const COLOR_VERDE = 0x00ff00;
 const COLOR_AZUL = 0x0000ff;
@@ -137,8 +138,7 @@ class Tetromino {
     for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
       let x = c_x + this.offsets[this.shape][i][0];
       let y = c_y + this.offsets[this.shape][i][1];
-      let color = COLOR_TETROMINO[this.shape];
-
+      let color = this.color;
       let b = this.renderBlock(color);
       b.x = x * BLOCKSIZE;
       b.y = y * BLOCKSIZE;
@@ -261,7 +261,7 @@ function unrenderBlockPreview() {
   let f = game.add.graphics(gameWidth, 0);
 
   // 2. Definimos el color negro
-  f.beginFill(COLOR_BLANCO, 1);
+  f.beginFill(COLOR_GRIS, 1);
 
   // 3. Dibujamos desde el (0,0) LOCAL del objeto Graphics.
   // El ancho debe ser solamente el extra, no la suma.
@@ -358,7 +358,7 @@ function spawn() {
   }
 
   let shape = nextForma;
-  let color = COLOR_BLANCO;
+  let color = COLOR_TETROMINO[nextForma];
   tetromino = new Tetromino(shape, color, theTetris);
 
   let start_x = Math.floor(NUMBLOCKS_X / 2);
