@@ -220,10 +220,20 @@ class Tetromino {
 }
 
 let gameState = {
+  preload: loadGame,
   create: resetGame,
   update: updateGame,
 };
 
+function loadGame(){
+  game.load.audio('GameOver','assets/sounds/game_gameover.wav');
+}
+
+function CreateSounds(){
+  soundGameOver = game.add.audio('GameOver');
+}
+
+let soundGameOver;
 let bg;
 let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = NUMBLOCKS_X * BLOCKSIZE;
@@ -379,6 +389,7 @@ function setGameOver(on) {
       },
     );
     centerText.anchor.set(0.5);
+    //soundGameOver.play();
   }
 }
 
