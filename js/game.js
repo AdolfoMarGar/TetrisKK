@@ -231,14 +231,16 @@ function loadGame(){
   game.load.audio('Done_Line','assets/sounds/Done_Line.mp3');
   game.load.audio('Full_Tetris','assets/sounds/Full_Tetris.mp3');
   game.load.audio('Piece_Fall','assets/sounds/Piece_Falling.mp3');
-  //game.load.audio('OK','assets/sounds/se_sys_ok.wav');
+  game.load.audio('OK','assets/sounds/se_sys_ok.wav');
 }
 
 function CreateSounds(){
   soundGameOver = game.add.audio('GameOver');
+  soundTheme = game.add.audio("Theme");
+  singleLine = game.add.audio("Done_Line");
 }
 
-let soundGameOver;
+let soundGameOver, soundTheme, singleLine;
 let bg;
 let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = NUMBLOCKS_X * BLOCKSIZE;
@@ -293,8 +295,11 @@ function resetGame() {
   for (const h of HUD) {
     h.style.display = "block";
   }
-
+  //Create the sounds themselves.
   CreateSounds();
+  soundTheme.loop = true;
+  soundTheme.play();
+  soundTheme.volume = 0.3;
   // clear all blocks
   game.world.removeAll();
 
@@ -396,7 +401,10 @@ function setGameOver(on) {
       },
     );
     centerText.anchor.set(0.5);
+    soundTheme.stop();
+    soundTheme.loop = false;
     soundGameOver.play();
+    soundGameOver.volume = 0.4;
   }
 }
 
@@ -487,6 +495,9 @@ function checkLines(candidateLines) {
     points += 10 * collapsed.length;
     display_points.textContent = points.toString();
     display_lines.textContent = lines_done.toString();
+  }
+  if(collapsed.length == 1 || collapsed.length == 2){
+    singleLine.play();
   }
 }
 
