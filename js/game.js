@@ -227,6 +227,11 @@ let gameState = {
 
 function loadGame(){
   game.load.audio('GameOver','assets/sounds/game_gameover.wav');
+  game.load.audio('Theme','assets/sounds/Defense Battle.mp3');
+  game.load.audio('Done_Line','assets/sounds/Done_Line.mp3');
+  game.load.audio('Full_Tetris','assets/sounds/Full_Tetris.mp3');
+  game.load.audio('Piece_Fall','assets/sounds/Piece_Falling.mp3');
+  //game.load.audio('OK','assets/sounds/se_sys_ok.wav');
 }
 
 function CreateSounds(){
