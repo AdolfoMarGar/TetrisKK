@@ -288,6 +288,8 @@ function resetGame() {
   for (const h of HUD) {
     h.style.display = "block";
   }
+
+  CreateSounds();
   // clear all blocks
   game.world.removeAll();
 
@@ -389,7 +391,7 @@ function setGameOver(on) {
       },
     );
     centerText.anchor.set(0.5);
-    //soundGameOver.play();
+    soundGameOver.play();
   }
 }
 
