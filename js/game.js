@@ -231,6 +231,7 @@ function loadGame(){
   game.load.audio('Done_Line','assets/sounds/Done_Line.mp3');
   game.load.audio('Full_Tetris','assets/sounds/Full_Tetris.mp3');
   game.load.audio('Piece_Fall','assets/sounds/Piece_Falling.mp3');
+  game.load.audio("Triple",'assets/sounds/se_game_triple.wav');
   game.load.audio('OK','assets/sounds/se_sys_ok.wav');
 }
 
@@ -238,9 +239,12 @@ function CreateSounds(){
   soundGameOver = game.add.audio('GameOver');
   soundTheme = game.add.audio("Theme");
   singleLine = game.add.audio("Done_Line");
+  fulltetris = game.add.audio("Full_Tetris");
+  triple = game.add.audio("Triple");
+  p_fall = game.add.audio("Piece_Fall");
 }
 
-let soundGameOver, soundTheme, singleLine;
+let soundGameOver, soundTheme, singleLine, fulltetris, triple, p_fall;
 let bg;
 let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = NUMBLOCKS_X * BLOCKSIZE;
@@ -475,7 +479,10 @@ function lockTetromino() {
 
     if (touchedLines.indexOf(y) == -1) touchedLines.push(y);
   }
-  checkLines(touchedLines);
+  const destroyed = checkLines(touchedLines);
+  if (!destroyed){
+    p_fall.play();
+  }
   spawn();
 }
 
@@ -499,6 +506,14 @@ function checkLines(candidateLines) {
   if(collapsed.length == 1 || collapsed.length == 2){
     singleLine.play();
   }
+  else if (collapsed.length == 4) {
+    fulltetris.play();
+  }
+  else if(collapsed.length == 3){
+    triple.play();
+    triple.volume = 0.8;
+  }
+  return collapsed.length > 0;
 }
 
 // Suma el estado de una fila para detectar si está completamente ocupada.
