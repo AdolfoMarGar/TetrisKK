@@ -500,18 +500,26 @@ function checkLines(candidateLines) {
     collapse(collapsed);
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
-    display_points.textContent = points.toString();
     display_lines.textContent = lines_done.toString();
   }
   if(collapsed.length == 1 || collapsed.length == 2){
     singleLine.play();
+    if (collapsed.length == 2){
+      points += 5;
+    }
+    display_points.textContent = points.toString();
   }
   else if (collapsed.length == 4) {
     fulltetris.play();
+    fulltetris.volume = 0.7;
+    points += 25;
+    display_points.textContent = points.toString();
   }
   else if(collapsed.length == 3){
     triple.play();
     triple.volume = 0.8;
+    points += 15
+    display_points.textContent = points.toString();
   }
   return collapsed.length > 0;
 }
