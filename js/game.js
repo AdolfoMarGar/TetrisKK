@@ -63,6 +63,13 @@ class Tetris {
     if (this.scene[x][y] === OCCUPIED) return false;
     return true;
   }
+
+  //special one for rotations
+  validateCoordinatesRotate(x,y){
+    if (y < 0 || y >= NUMBLOCKS_Y) return false;
+    if (this.scene[x][y] === OCCUPIED) return false;
+    return true;
+  }
 }
 
 class Tetromino {
@@ -178,14 +185,12 @@ class Tetromino {
     return true;
   }
 
-  //Move for rotation
+  //Checks Movement for rotation
   canMoveRotate(coordFn){
     if(gameOverState) return false;
     for (let i = 0; i < this.cells.length; i++){
       let nc = coordFn(i, "clockwise");
-      if ((nc[1] < 0 || nc[1] >= NUMBLOCKS_Y) || (this.scene[nc[0]][nc[1]] === OCCUPIED)){
-        return false;
-      }
+      if (!this.tetris.validateCoordinatesRotate(nc[0], nc[1])) return false;
     }
     return true;
   }
@@ -237,6 +242,45 @@ class Tetromino {
     }
     if (centerFn) {
       let nc = centerFn(dir);
+      this.center = [nc[0], nc[1]];
+    }
+  }
+
+  //Special one for rotations
+  moveRotate(coordFn, centerFn) {
+    let dif = undefined;
+    for (let i = 0; i < this.cells.length; i++) {
+      let ox = this.cells[i][0];
+      let oy = this.cells[i][1];
+      let nc = coordFn(i, "clockwise");
+      let nx = nc[0];
+      let ny = nc[1];
+      if(nx<0){
+        if (dif) dif = max(dif,0-nx); 
+        else dif = 0-nx;
+      }
+      else if (nx>=NUMBLOCKS_X){
+        if (dif) dif = min(dif,NUMBLOCKS_X-1-nx);
+        else dif = NUMBLOCKS_X-1-nx;
+      }
+
+      this.cells[i][0] = nx;
+      this.cells[i][1] = ny;
+      this.blocks[i].x = nx * BLOCKSIZE;
+      this.blocks[i].y = ny * BLOCKSIZE;
+
+      this.tetris.scene[ox][oy] = EMPTY;
+      this.tetris.scene[nx][ny] = FALLING;
+    }
+    if (centerFn) {
+      let nc = centerFn("clockwise");
+      this.center = [nc[0], nc[1]];
+    }
+    if (dif) for(let i = 0; i<this.cells.length; i++){
+      this.cells[i][0] += dif;
+    }
+    if (centerFn) {
+      let nc = centerFn("clockwise");
       this.center = [nc[0], nc[1]];
     }
   }
@@ -492,7 +536,7 @@ function updateGame() {
   } else if (keyRotate.isDown) {
     // O piece rotation is pointless, but harmless
     if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino)))
-      tetromino.move(tetromino.rotate.bind(tetromino), null, "clockwise");
+      tetromino.moveRotate(tetromino.rotate.bind(tetromino), null, "clockwise");
   }
 
   currentMovementTimer = 0;
