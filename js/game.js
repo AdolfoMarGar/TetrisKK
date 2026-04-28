@@ -4,6 +4,7 @@ const NUMBLOCKS_X = 10; // classic width
 const NUMBLOCKS_Y = 20; // classic height
 const MOVEMENT_LAG = 85; // ms (soft key repeat)
 const INITIAL_FALL_DELAY = 600; // ms
+const HUD = document.getElementsByClassName("HUD"); //References the HUD elements.
 
 // 7 tetrominoes, rotation around a center cell
 const BLOCKS_PER_TETROMINO = 4;
@@ -238,10 +239,31 @@ class Tetromino {
 }
 
 let gameState = {
+  preload: loadGame,
   create: resetGame,
   update: updateGame,
 };
 
+function loadGame(){
+  game.load.audio('GameOver','assets/sounds/game_gameover.wav');
+  game.load.audio('Theme','assets/sounds/Defense Battle.mp3');
+  game.load.audio('Done_Line','assets/sounds/Done_Line.mp3');
+  game.load.audio('Full_Tetris','assets/sounds/Full_Tetris.mp3');
+  game.load.audio('Piece_Fall','assets/sounds/Piece_Falling.mp3');
+  game.load.audio("Triple",'assets/sounds/se_game_triple.wav');
+  game.load.audio('OK','assets/sounds/se_sys_ok.wav');
+}
+
+function CreateSounds(){
+  soundGameOver = game.add.audio('GameOver');
+  soundTheme = game.add.audio("Theme");
+  singleLine = game.add.audio("Done_Line");
+  fulltetris = game.add.audio("Full_Tetris");
+  triple = game.add.audio("Triple");
+  p_fall = game.add.audio("Piece_Fall");
+}
+
+let soundGameOver, soundTheme, singleLine, fulltetris, triple, p_fall;
 let bg;
 let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = NUMBLOCKS_X * BLOCKSIZE;
@@ -293,6 +315,14 @@ Player_name.addEventListener("click", function () {
 
 // Reinicia estado, tablero, HUD, input, temporizador y puntos para empezar una partida limpia.
 function resetGame() {
+  for (const h of HUD) {
+    h.style.display = "block";
+  }
+  //Create the sounds themselves.
+  CreateSounds();
+  soundTheme.loop = true;
+  soundTheme.play();
+  soundTheme.volume = 0.3;
   // clear all blocks
   game.world.removeAll();
 
@@ -386,7 +416,7 @@ function setGameOver(on) {
     centerText = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      "GAME OVER\n\nPress R to restart",
+      "GAME OVER\nPress R to restart\n\nTotal Points: " + points.toString() +"\nLines Destroyed: " + lines_done.toString() + "\nPlayer: " + Player_name.textContent,
       {
         font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
         fill: "#ffffff",
@@ -394,6 +424,10 @@ function setGameOver(on) {
       },
     );
     centerText.anchor.set(0.5);
+    soundTheme.stop();
+    soundTheme.loop = false;
+    soundGameOver.play();
+    soundGameOver.volume = 0.4;
   }
 }
 
@@ -464,7 +498,10 @@ function lockTetromino() {
 
     if (touchedLines.indexOf(y) == -1) touchedLines.push(y);
   }
-  checkLines(touchedLines);
+  const destroyed = checkLines(touchedLines);
+  if (!destroyed){
+    p_fall.play();
+  }
   spawn();
 }
 
@@ -482,9 +519,26 @@ function checkLines(candidateLines) {
     collapse(collapsed);
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
-    display_points.textContent = points.toString();
     display_lines.textContent = lines_done.toString();
+  if(collapsed.length == 1 || collapsed.length == 2){
+    singleLine.play();
+    if (collapsed.length == 2){
+      points += 5;
+    }
   }
+  else if (collapsed.length == 4) {
+    fulltetris.play();
+    fulltetris.volume = 0.7;
+    points += 25;
+  }
+  else if(collapsed.length == 3){
+    triple.play();
+    triple.volume = 0.8;
+    points += 15
+  }
+  display_points.textContent = points.toString();
+}
+  return collapsed.length > 0;
 }
 
 // Suma el estado de una fila para detectar si está completamente ocupada.
