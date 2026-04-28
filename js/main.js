@@ -1,9 +1,10 @@
-const ANCHO_MENU = window.innerWidth;
-const ALTO_MENU = window.innerHeight;
+const ANCHO_MENU = window.innerWidth*0.85;
+const ALTO_MENU = window.innerHeight*0.85;
 const COLUMNA_1 = ANCHO_MENU*0.4;
 const COLUMNA_2 = ANCHO_MENU*0.60;
 const ALTURA_1= ALTO_MENU*0.5;
 const ALTURA_2=ALTO_MENU*0.65;
+
 let menuState={
     preload: function(){
         
@@ -15,6 +16,8 @@ let menuState={
         game.load.image("cred","assets/cred.png");
         game.load.image("rank","assets/rank.png");
         game.load.image("nivel","assets/nivel.png");
+        game.load.image("nom","assets/nom.png");
+        game.load.image("volver","assets/volver1.png");
     },
     create: function(){
        // game.scale.setGameSize(window.innerWidth, window.innerHeight);
@@ -33,8 +36,10 @@ let menuState={
 
         let botonrank=game.add.button(COLUMNA_2, ALTURA_2 , 'rank', this.verRanking, this);
         botonrank.anchor.setTo(0.5,0.5);
-
         
+        let botonnom=game.add.button(COLUMNA_2+300, ALTURA_2+78 , 'nom');
+        botonnom.anchor.setTo(0.5,0.5);
+
         
 
     },
@@ -50,7 +55,8 @@ let menuState={
     },
     verRanking:function(){
         game.state.start('Ranking')
-    }
+    },
+
 };
 let creditosState={
     create : function(){
@@ -58,7 +64,7 @@ let creditosState={
         let fondo = game.add.sprite(0, 0, "fondoC");
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
-        let botonVolver = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'play1', this.volverMenu, this);
+        let botonVolver = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'volver', this.volverMenu, this);
         botonVolver.anchor.setTo(0.5,0.5);
 
     },
@@ -72,7 +78,7 @@ let nivelesState={
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
 
-        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'play1', this.volverMenu, this);
+        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'volver', this.volverMenu, this);
         botonVolver2.anchor.setTo(0.5,0.5);
     },
     volverMenu : function(){
@@ -84,10 +90,8 @@ let rankingState={
         let fondo = game.add.sprite(0, 0, "fondoR");
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
-        let estitulo = {font: "100px Arial", fill:"#671bf5" , align:"center"}
-        let titulo= game.add.text(game.world.width * 0.5, game.world.height * 0.15,"RANKING",estitulo);
-        titulo.anchor.setTo(0.5, 0.5);
-        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'play1', this.volverMenu, this);
+        
+        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'volver', this.volverMenu, this);
         botonVolver2.anchor.setTo(0.5,0.5);
     },
     volverMenu : function(){
@@ -95,11 +99,14 @@ let rankingState={
     }
 }
 
+
+
 let game = new Phaser.Game(ANCHO_MENU, ALTO_MENU, Phaser.CANVAS, 'game');
 game.state.add("Menu",menuState);
 game.state.add('Game', gameState);
 game.state.add("Creditos",creditosState);
 game.state.add("Niveles",nivelesState);
 game.state.add("Ranking",rankingState);
+
 
 game.state.start("Menu");
