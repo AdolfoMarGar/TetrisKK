@@ -10,7 +10,7 @@ const HUD = document.getElementsByClassName("HUD"); //References the HUD element
 const BLOCKS_PER_TETROMINO = 4;
 const N_BLOCK_TYPES = 7;
 
-// Color de las piezas: blanco
+// Color de las piezas
 const COLOR_BLANCO = 0xffffff;
 const COLOR_GRIS = 0xc0c0c0;
 const COLOR_NEGRO = 0x000000;
@@ -174,6 +174,18 @@ class Tetromino {
     for (let i = 0; i < this.cells.length; i++) {
       let nc = coordFn(i, dir);
       if (!this.tetris.validateCoordinates(nc[0], nc[1])) return false;
+    }
+    return true;
+  }
+
+  //Move for rotation
+  canMoveRotate(coordFn){
+    if(gameOverState) return false;
+    for (let i = 0; i < this.cells.length; i++){
+      let nc = coordFn(i, "clockwise");
+      if ((nc[1] < 0 || nc[1] >= NUMBLOCKS_Y) || (this.scene[nc[0]][nc[1]] === OCCUPIED)){
+        return false;
+      }
     }
     return true;
   }
@@ -479,7 +491,7 @@ function updateGame() {
     );
   } else if (keyRotate.isDown) {
     // O piece rotation is pointless, but harmless
-    if (tetromino.canMove(tetromino.rotate.bind(tetromino), "clockwise"))
+    if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino)))
       tetromino.move(tetromino.rotate.bind(tetromino), null, "clockwise");
   }
 
