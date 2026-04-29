@@ -4,6 +4,7 @@ const COLUMNA_1 = ANCHO_MENU*0.4;
 const COLUMNA_2 = ANCHO_MENU*0.60;
 const ALTURA_1= ALTO_MENU*0.5;
 const ALTURA_2=ALTO_MENU*0.65;
+const IMG=300;
 
 let menuState={
     preload: function(){
@@ -59,17 +60,35 @@ let menuState={
 
 };
 let creditosState={
+     preload: function(){
+        game.load.image("I","assets/I.png");
+        game.load.image("V","assets/V.png");
+        game.load.image("A","assets/A.png");
+     },
     create : function(){
         //game.scale.setGameSize(window.innerWidth, window.innerHeight);
         let fondo = game.add.sprite(0, 0, "fondoC");
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
-        let botonVolver = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'volver', this.volverMenu, this);
+        let img1=game.add.image(COLUMNA_1-150,ALTURA_1+30,'I');
+        this.configurarImagen(img1);
+        let img2=game.add.image(COLUMNA_1+130,ALTURA_1+30,'V');
+        this.configurarImagen(img2);
+        let img3=game.add.image(COLUMNA_1+400,ALTURA_1+30,'A');
+        this.configurarImagen(img3);
+        
+        let botonVolver = game.add.button(game.world.width * 0.5, game.world.height * 0.90, 'volver', this.volverMenu, this);
         botonVolver.anchor.setTo(0.5,0.5);
 
     },
     volverMenu : function(){
         game.state.start('Menu'); 
+    },
+    configurarImagen:function(img){
+        img.width = IMG;
+        img.height = IMG;
+        img.anchor.setTo(0.5, 0.5);
+
     }
 };
 let nivelesState={
@@ -78,7 +97,7 @@ let nivelesState={
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
 
-        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'volver', this.volverMenu, this);
+        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.90, 'volver', this.volverMenu, this);
         botonVolver2.anchor.setTo(0.5,0.5);
     },
     volverMenu : function(){
@@ -91,13 +110,15 @@ let rankingState={
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
         
-        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'volver', this.volverMenu, this);
+        let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.90, 'volver', this.volverMenu, this);
         botonVolver2.anchor.setTo(0.5,0.5);
     },
     volverMenu : function(){
         game.state.start('Menu'); 
     }
-}
+};
+
+
 
 
 
