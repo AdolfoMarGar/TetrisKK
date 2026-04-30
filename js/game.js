@@ -67,7 +67,9 @@ class Tetris {
   //special one for rotations
   validateCoordinatesRotate(x,y){
     if (y < 0 || y >= NUMBLOCKS_Y) return false;
-    if (this.scene[x][y] === OCCUPIED) return false;
+    if (x > 0 && x <= NUMBLOCKS_X){
+      if (this.scene[x][y] === OCCUPIED) return false;
+    }
     return true;
   }
 }
@@ -255,12 +257,14 @@ class Tetromino {
       let nc = coordFn(i, "clockwise");
       let nx = nc[0];
       let ny = nc[1];
+      // console.log(nx);
+      // console.log(dif);
       if(nx<0){
-        if (dif) dif = max(dif,0-nx); 
+        if (dif) dif = Math.max(dif,0-nx);
         else dif = 0-nx;
       }
       else if (nx>=NUMBLOCKS_X){
-        if (dif) dif = min(dif,NUMBLOCKS_X-1-nx);
+        if (dif) dif = Math.min(dif,NUMBLOCKS_X-1-nx);
         else dif = NUMBLOCKS_X-1-nx;
       }
 
@@ -270,14 +274,19 @@ class Tetromino {
       this.blocks[i].y = ny * BLOCKSIZE;
 
       this.tetris.scene[ox][oy] = EMPTY;
-      this.tetris.scene[nx][ny] = FALLING;
-    }
-    if (centerFn) {
-      let nc = centerFn("clockwise");
-      this.center = [nc[0], nc[1]];
+      if (nx < 0){
+        this.tetris.scene[nx+dif][ny] = FALLING;
+      }
+      else if (nx >= NUMBLOCKS_X){
+        this.tetris.scene[nx-dif][ny] = FALLING;
+      }
+      else{
+        this.tetris.scene[nx][ny] = FALLING;
+      }
     }
     if (dif) for(let i = 0; i<this.cells.length; i++){
       this.cells[i][0] += dif;
+      this.blocks[i].x = this.cells[i][0] * BLOCKSIZE;
     }
     if (centerFn) {
       let nc = centerFn("clockwise");
