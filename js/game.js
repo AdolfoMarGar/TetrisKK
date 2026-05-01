@@ -369,7 +369,9 @@ let timer, loop;
 let currentMovementTimer = 0;
 let shade, centerText;
 let points = 0,
-  lines_done = 0;
+  lines_done = 0,
+  combo = 0;
+const display_combo = document.getElementById("combo");
 const display_points = document.getElementById("puntos");
 const display_lines = document.getElementById("lines");
 const Player_name = document.getElementById("player");
@@ -398,8 +400,10 @@ function resetGame() {
   currentMovementTimer = 0;
   points = 0;
   lines_done = 0;
+  combo = 0;
   display_points.textContent = points.toString();
   display_lines.textContent = lines_done.toString();
+  display_combo.textContent = combo.toString();
   nextForma = null;
   // Create Trellis and initialisation of its grid
   theTetris = new Tetris();
@@ -570,6 +574,8 @@ function lockTetromino() {
   const destroyed = checkLines(touchedLines);
   if (!destroyed){
     p_fall.play();
+    combo = 0;
+    display_combo.textContent = combo.toString()
   }
   spawn();
 }
@@ -593,20 +599,30 @@ function checkLines(candidateLines) {
     singleLine.play();
     if (collapsed.length == 2){
       points += 5;
+      combo += 2;
+    }
+    else if (collapsed.length == 1 && combo != 0){
+      combo += 1;
     }
   }
   else if (collapsed.length == 4) {
     fulltetris.play();
     fulltetris.volume = 0.7;
     points += 25;
+    combo += 4;
   }
   else if(collapsed.length == 3){
     triple.play();
     triple.volume = 0.8;
     points += 15
+    combo += 3;
   }
   display_points.textContent = points.toString();
 }
+  if (combo !=0){
+    points += combo * 10;
+  }
+  display_combo.textContent = combo.toString()
   return collapsed.length > 0;
 }
 
@@ -654,5 +670,6 @@ function collapse(linesToCollapse) {
 }
 
 function returnMenu(){
+  game.scale.setGameSize(window.innerWidth, window.innerHeight);
   game.state.start("Menu");
 }
