@@ -67,7 +67,7 @@ class Tetris {
   //special one for rotations
   validateCoordinatesRotate(x,y){
     if (y < 0 || y >= NUMBLOCKS_Y) return false;
-    if (x > 0 && x <= NUMBLOCKS_X){
+    if (x > 0 && x < NUMBLOCKS_X){
       if (this.scene[x][y] === OCCUPIED) return false;
     }
     return true;
