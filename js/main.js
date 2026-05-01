@@ -84,9 +84,6 @@ let rankingState={
         let fondo = game.add.sprite(0, 0, "fondoR");
         fondo.width = ANCHO_MENU;
         fondo.height = ALTO_MENU;
-        let estitulo = {font: "100px Arial", fill:"#671bf5" , align:"center"}
-        let titulo= game.add.text(game.world.width * 0.5, game.world.height * 0.15,"RANKING",estitulo);
-        titulo.anchor.setTo(0.5, 0.5);
         let botonVolver2 = game.add.button(game.world.width * 0.5, game.world.height * 0.8548387096774194, 'play1', this.volverMenu, this);
         botonVolver2.anchor.setTo(0.5,0.5);
     },

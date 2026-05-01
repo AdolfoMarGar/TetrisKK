@@ -362,7 +362,7 @@ function unrenderBlockPreview() {
 
 // Elements for the game
 let tetromino, theTetris;
-let cursors, keyRotate, keyRestart;
+let cursors, keyRotate, keyRestart, keyMenu;
 let gameOverState = false;
 let nextForma = null;
 let timer, loop;
@@ -424,6 +424,7 @@ function resetGame() {
   cursors = game.input.keyboard.createCursorKeys();
   keyRotate = game.input.keyboard.addKey(Phaser.Keyboard.UP);
   keyRestart = game.input.keyboard.addKey(Phaser.Keyboard.R);
+  keyMenu = game.input.keyboard.addKey(Phaser.Keyboard.T);
 
   // timer
   // IMPORTANTE: si venimos de un game over, el Timer andará pausado.
@@ -483,7 +484,7 @@ function setGameOver(on) {
     centerText = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      "GAME OVER\nPress R to restart\n\nTotal Points: " + points.toString() +"\nLines Destroyed: " + lines_done.toString() + "\nPlayer: " + Player_name.textContent,
+      "GAME OVER\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " + points.toString() +"\nLines Destroyed: " + lines_done.toString() + "\nPlayer: " + Player_name.textContent,
       {
         font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
         fill: "#ffffff",
@@ -513,6 +514,7 @@ function updateGame() {
 
   if (gameOverState) {
     if (keyRestart.isDown) resetGame();
+    if(keyMenu.isDown) returnMenu();
     currentMovementTimer = 0;
     return;
   }
@@ -649,4 +651,8 @@ function collapse(linesToCollapse) {
       theTetris.sceneBlocks[x2][0] = null;
     }
   }
+}
+
+function returnMenu(){
+  game.state.start("Menu");
 }
