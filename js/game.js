@@ -278,7 +278,9 @@ class Tetromino {
         this.tetris.scene[nx+dif][ny] = FALLING;
       }
       else if (nx >= NUMBLOCKS_X){
-        this.tetris.scene[nx-dif][ny] = FALLING;
+        // console.log(nx);
+        // console.log(dif);
+        this.tetris.scene[nx+dif][ny] = FALLING;
       }
       else{
         this.tetris.scene[nx][ny] = FALLING;
