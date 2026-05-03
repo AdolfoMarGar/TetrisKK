@@ -14,6 +14,7 @@ let menuState = {
     game.load.image("cred", "assets/cred.png");
     game.load.image("rank", "assets/rank.png");
     game.load.image("nivel", "assets/nivel.png");
+    game.load.json("datos_ranking", "assets/ranking.json");
   },
   create: function () {
     // game.scale.setGameSize(window.innerWidth, window.innerHeight);
@@ -111,9 +112,36 @@ let nivelesState = {
 };
 let rankingState = {
   create: function () {
+    let datosGuardados = localStorage.getItem("ranking_local");
+    let lista;
+
+    if (datosGuardados) {
+      lista = JSON.parse(datosGuardados);
+      console.log("Cargando datos desde LocalStorage");
+    } else {
+      lista = game.cache.getJSON("datos_ranking");
+      console.log("Cargando datos desde el archivo JSON");
+    }
+
     let fondo = game.add.sprite(0, 0, "fondoR");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
+
+    if (lista) {
+      lista.forEach((entrada, index) => {
+        game.add.text(
+          100,
+          50 + 50 * index,
+          `${index + 1}. ${entrada.nombre}: ${entrada.puntos}`,
+          {
+            fill: "#000000",
+            font: "bold 24px Arial",
+            align: "center",
+          },
+        );
+      });
+    }
+
     // let estitulo = { font: "100px Arial", fill: "#671bf5", align: "center" };
     // let titulo = game.add.text(
     //   game.world.width * 0.5,

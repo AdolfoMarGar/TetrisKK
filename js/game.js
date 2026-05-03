@@ -306,6 +306,7 @@ let points = 0,
 const display_points = document.getElementById("puntos");
 const display_lines = document.getElementById("lines");
 const Player_name = document.getElementById("player");
+const Player_points = document.getElementById("puntos");
 Player_name.addEventListener("click", function () {
   let newName = prompt("Give new name: ", Player_name.textContent);
   if (newName !== null && newName.trim() !== "") {
@@ -357,6 +358,7 @@ function resetGame() {
   cursors = game.input.keyboard.createCursorKeys();
   keyRotate = game.input.keyboard.addKey(Phaser.Keyboard.UP);
   keyRestart = game.input.keyboard.addKey(Phaser.Keyboard.R);
+  keyMenu = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
   // timer
   // IMPORTANTE: si venimos de un game over, el Timer andará pausado.
@@ -406,17 +408,39 @@ function spawn() {
 
   if (conflict) setGameOver(true);
 }
+function manageRanking() {
+  let datosCargados = localStorage.getItem("ranking_local");
+  let lista = datosCargados
+    ? JSON.parse(datosCargados)
+    : game.cache.getJSON("datos_ranking");
+
+  let nuevaEntrada = {
+    nombre: Player_name.textContent,
+    puntos: parseInt(Player_points.textContent) || 0,
+  };
+
+  lista.push(nuevaEntrada);
+  lista.sort((a, b) => b.puntos - a.puntos);
+
+  if (lista.length > 10) {
+    lista.splice(10);
+  }
+
+  localStorage.setItem("ranking_local", JSON.stringify(lista));
+  console.log("Guardado en ranking_local");
+}
 
 // Activa el estado de fin de partida y muestra un mensaje de reinicio.
 function setGameOver(on) {
   gameOverState = on;
   if (gameOverState) {
+    manageRanking();
     timer.pause();
     makeShade(0.65);
     centerText = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      "GAME OVER\nPress R to restart\n\nTotal Points: " +
+      "GAME OVER\nPress R to restart\nPress M to menu\n\nTotal Points: " +
         points.toString() +
         "\nLines Destroyed: " +
         lines_done.toString() +
@@ -451,6 +475,10 @@ function updateGame() {
 
   if (gameOverState) {
     if (keyRestart.isDown) resetGame();
+    if (keyMenu.isDown) {
+      game.scale.setGameSize(ANCHO_MENU, ALTO_MENU);
+      game.state.start("Menu");
+    }
     currentMovementTimer = 0;
     return;
   }

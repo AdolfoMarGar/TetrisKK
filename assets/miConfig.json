@@ -1,5 +1,0 @@
-[
-  { "nombre": "Admin", "puntos": 500 },
-  { "nombre": "CPU", "puntos": 250 },
-  { "nombre": "Jugador", "puntos": 100 }
-]
