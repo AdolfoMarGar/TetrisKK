@@ -1,10 +1,10 @@
-const ANCHO_MENU = window.innerWidth;
-const ALTO_MENU = window.innerHeight;
-const COLUMNA_1 = ANCHO_MENU * 0.4;
-const COLUMNA_2 = ANCHO_MENU * 0.6;
-const ALTURA_1 = ALTO_MENU * 0.5;
-const ALTURA_2 = ALTO_MENU * 0.65;
-const IMG = 300;
+const ANCHO_MENU = window.innerWidth*0.85;
+const ALTO_MENU = window.innerHeight*0.85;
+const COLUMNA_1 = ANCHO_MENU*0.35;
+const COLUMNA_2 = ANCHO_MENU*0.65;
+const ALTURA_1= ALTO_MENU*0.5;
+const ALTURA_2=ALTO_MENU*0.70;
+const IMG=300;
 
 let menuState = {
   preload: function () {
@@ -33,7 +33,14 @@ let menuState = {
       this,
     );
     botonplay.anchor.setTo(0.5, 0.5);
-
+    let botonniv = game.add.button(
+      COLUMNA_2,
+      ALTURA_1,
+      "nivel",
+      this.verNiveles,
+      this,
+    );
+    botonniv.anchor.setTo(0.5, 0.5);
     let botoncred = game.add.button(
       COLUMNA_1,
       ALTURA_2,
@@ -167,7 +174,7 @@ let rankingState = {
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
       game.world.height * 0.8548387096774194,
-      "play1",
+      "volver",
       this.volverMenu,
       this,
     );
