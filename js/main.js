@@ -4,6 +4,8 @@ const COLUMNA_1 = ANCHO_MENU * 0.4;
 const COLUMNA_2 = ANCHO_MENU * 0.6;
 const ALTURA_1 = ALTO_MENU * 0.5;
 const ALTURA_2 = ALTO_MENU * 0.65;
+const IMG = 300;
+
 let menuState = {
   preload: function () {
     game.load.image("fondo", "assets/fondo.jpg");
@@ -14,7 +16,8 @@ let menuState = {
     game.load.image("cred", "assets/cred.png");
     game.load.image("rank", "assets/rank.png");
     game.load.image("nivel", "assets/nivel.png");
-    // game.load.json("datos_ranking", "assets/ranking.json");
+    game.load.image("nom", "assets/nom.png");
+    game.load.image("volver", "assets/volver1.png");
   },
   create: function () {
     // game.scale.setGameSize(window.innerWidth, window.innerHeight);
@@ -40,15 +43,6 @@ let menuState = {
     );
     botoncred.anchor.setTo(0.5, 0.5);
 
-    let botonniv = game.add.button(
-      COLUMNA_2,
-      ALTURA_1,
-      "nivel",
-      this.verNiveles,
-      this,
-    );
-    botonniv.anchor.setTo(0.5, 0.5);
-
     let botonrank = game.add.button(
       COLUMNA_2,
       ALTURA_2,
@@ -57,6 +51,9 @@ let menuState = {
       this,
     );
     botonrank.anchor.setTo(0.5, 0.5);
+
+    let botonnom = game.add.button(COLUMNA_2 + 300, ALTURA_2 + 78, "nom");
+    botonnom.anchor.setTo(0.5, 0.5);
   },
   iniciarJuego: function () {
     game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
@@ -73,15 +70,27 @@ let menuState = {
   },
 };
 let creditosState = {
+  preload: function () {
+    game.load.image("I", "assets/I.png");
+    game.load.image("V", "assets/V.png");
+    game.load.image("A", "assets/A.png");
+  },
   create: function () {
     //game.scale.setGameSize(window.innerWidth, window.innerHeight);
     let fondo = game.add.sprite(0, 0, "fondoC");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
+    let img1 = game.add.image(COLUMNA_1 - 150, ALTURA_1 + 30, "I");
+    this.configurarImagen(img1);
+    let img2 = game.add.image(COLUMNA_1 + 130, ALTURA_1 + 30, "V");
+    this.configurarImagen(img2);
+    let img3 = game.add.image(COLUMNA_1 + 400, ALTURA_1 + 30, "A");
+    this.configurarImagen(img3);
+
     let botonVolver = game.add.button(
       game.world.width * 0.5,
-      game.world.height * 0.8548387096774194,
-      "play1",
+      game.world.height * 0.9,
+      "volver",
       this.volverMenu,
       this,
     );
@@ -89,6 +98,11 @@ let creditosState = {
   },
   volverMenu: function () {
     game.state.start("Menu");
+  },
+  configurarImagen: function (img) {
+    img.width = IMG;
+    img.height = IMG;
+    img.anchor.setTo(0.5, 0.5);
   },
 };
 let nivelesState = {
@@ -99,8 +113,8 @@ let nivelesState = {
 
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
-      game.world.height * 0.8548387096774194,
-      "play1",
+      game.world.height * 0.9,
+      "volver",
       this.volverMenu,
       this,
     );
