@@ -14,7 +14,7 @@ let menuState = {
     game.load.image("cred", "assets/cred.png");
     game.load.image("rank", "assets/rank.png");
     game.load.image("nivel", "assets/nivel.png");
-    game.load.json("datos_ranking", "assets/ranking.json");
+    // game.load.json("datos_ranking", "assets/ranking.json");
   },
   create: function () {
     // game.scale.setGameSize(window.innerWidth, window.innerHeight);
