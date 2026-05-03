@@ -1,10 +1,11 @@
-const ANCHO_MENU = window.innerWidth*0.85;
-const ALTO_MENU = window.innerHeight*0.85;
-const COLUMNA_1 = ANCHO_MENU*0.35;
-const COLUMNA_2 = ANCHO_MENU*0.65;
-const ALTURA_1= ALTO_MENU*0.5;
-const ALTURA_2=ALTO_MENU*0.70;
-const IMG=300;
+const ANCHO_MENU = window.innerWidth * 0.85;
+const ALTO_MENU = window.innerHeight * 0.85;
+const COLUMNA_1 = ANCHO_MENU * 0.35;
+const COLUMNA_2 = ANCHO_MENU * 0.65;
+const ALTURA_1 = ALTO_MENU * 0.5;
+const ALTURA_2 = ALTO_MENU * 0.7;
+const IMG = 300;
+let levelToPlay = 1;
 
 let menuState = {
   preload: function () {
@@ -18,6 +19,8 @@ let menuState = {
     game.load.image("nivel", "assets/nivel.png");
     game.load.image("nom", "assets/nom.png");
     game.load.image("volver", "assets/volver1.png");
+    game.load.image("num1", "assets/num1.png");
+    game.load.image("num2", "assets/num2.png");
   },
   create: function () {
     // game.scale.setGameSize(window.innerWidth, window.innerHeight);
@@ -63,7 +66,7 @@ let menuState = {
     botonnom.anchor.setTo(0.5, 0.5);
   },
   iniciarJuego: function () {
-    game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
+    // game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
     game.state.start("Game");
   },
   verCreditos: function () {
@@ -117,7 +120,26 @@ let nivelesState = {
     let fondo = game.add.sprite(0, 0, "fondoN");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
-
+    let botonNiv1 = game.add.button(
+      COLUMNA_1,
+      ALTURA_1,
+      "num1",
+      this.seleccionarNivel,
+      this,
+    );
+    botonNiv1.numNivel = 1;
+    botonNiv1.scale.setTo(0.1, 0.1);
+    botonNiv1.anchor.setTo(0.5, 0.5);
+    let botonNiv2 = game.add.button(
+      COLUMNA_2,
+      ALTURA_1,
+      "num2",
+      this.seleccionarNivel,
+      this,
+    );
+    botonNiv2.numNivel = 2;
+    botonNiv2.scale.setTo(0.1, 0.1);
+    botonNiv2.anchor.setTo(0.5, 0.5);
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
       game.world.height * 0.9,
@@ -126,6 +148,10 @@ let nivelesState = {
       this,
     );
     botonVolver2.anchor.setTo(0.5, 0.5);
+  },
+  seleccionarNivel: function (boton) {
+    levelToPlay = boton.numNivel;
+    document.getElementById("lvlSelected").textContent = levelToPlay;
   },
   volverMenu: function () {
     game.state.start("Menu");

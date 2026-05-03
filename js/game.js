@@ -1,10 +1,12 @@
 // --- Config ---
 const BLOCKSIZE = 28; // px
-const NUMBLOCKS_X = 10; // classic width
+let NUMBLOCKS_X = 10; // classic width
 const NUMBLOCKS_Y = 20; // classic height
 const MOVEMENT_LAG = 85; // ms (soft key repeat)
-const INITIAL_FALL_DELAY = 600; // ms
+let fall_delay = 600; // ms
+let necesaryPoints = 100; // ms
 const HUD = document.getElementsByClassName("HUD"); //References the HUD elements.
+let levelsData = ["assets/levels/level01.json", "assets/levels/level02.json"];
 
 // 7 tetrominoes, rotation around a center cell
 const BLOCKS_PER_TETROMINO = 4;
@@ -317,6 +319,7 @@ function loadGame() {
   game.load.audio("Piece_Fall", "assets/sounds/Piece_Falling.mp3");
   game.load.audio("Triple", "assets/sounds/se_game_triple.wav");
   game.load.audio("OK", "assets/sounds/se_sys_ok.wav");
+  loadLevel(levelToPlay);
 }
 
 function CreateSounds() {
@@ -380,7 +383,30 @@ Player_name.addEventListener("click", function () {
     Player_name.textContent = newName;
   }
 });
+function loadLevel(level) {
+  game.load.text("level", levelsData[level - 1], true);
+}
+function prepareLevelToPlay() {
+  let nivelTexto = game.cache.getText("level");
 
+  if (nivelTexto) {
+    try {
+      levelConfig = JSON.parse(nivelTexto);
+
+      fall_delay = levelConfig.timerFall;
+      necesaryPoints = levelConfig.necessaryPoints;
+      NUMBLOCKS_X = levelConfig.bloquesAnchoJugable;
+      gameWidth = NUMBLOCKS_X * BLOCKSIZE;
+      game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
+
+      console.log("Configuración del nivel cargada correctamente desde texto.");
+    } catch (error) {
+      console.error("Error al parsear el JSON del nivel:", error);
+    }
+  } else {
+    console.error("No se encontró contenido en el caché para 'level'.");
+  }
+}
 // Reinicia estado, tablero, HUD, input, temporizador y puntos para empezar una partida limpia.
 function resetGame() {
   for (const h of HUD) {
@@ -400,6 +426,7 @@ function resetGame() {
   points = 0;
   lines_done = 0;
   combo = 0;
+  prepareLevelToPlay(); //Carga el nivel a jugar, dependiendo de lo que se haya seleccionado en el menu.
   display_points.textContent = points.toString();
   display_lines.textContent = lines_done.toString();
   display_combo.textContent = combo.toString();
@@ -435,7 +462,7 @@ function resetGame() {
   timer = game.time.events;
   timer.removeAll();
   timer.resume();
-  loop = timer.loop(INITIAL_FALL_DELAY, fall, this);
+  loop = timer.loop(fall_delay, fall, this);
 
   spawn();
 }
@@ -694,6 +721,9 @@ function collapse(linesToCollapse) {
 }
 
 function returnMenu() {
-  game.scale.setGameSize(window.innerWidth, window.innerHeight);
+  for (const h of HUD) {
+    h.style.display = "none";
+  }
+  game.scale.setGameSize(window.innerWidth * 0.85, window.innerHeight * 0.85);
   game.state.start("Menu");
 }
