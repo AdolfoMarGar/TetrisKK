@@ -65,9 +65,9 @@ class Tetris {
   }
 
   //special one for rotations
-  validateCoordinatesRotate(x,y){
+  validateCoordinatesRotate(x, y) {
     if (y < 0 || y >= NUMBLOCKS_Y) return false;
-    if (x > 0 && x < NUMBLOCKS_X){
+    if (x > 0 && x < NUMBLOCKS_X) {
       if (this.scene[x][y] === OCCUPIED) return false;
     }
     return true;
@@ -188,9 +188,9 @@ class Tetromino {
   }
 
   //Checks Movement for rotation
-  canMoveRotate(coordFn){
-    if(gameOverState) return false;
-    for (let i = 0; i < this.cells.length; i++){
+  canMoveRotate(coordFn) {
+    if (gameOverState) return false;
+    for (let i = 0; i < this.cells.length; i++) {
       let nc = coordFn(i, "clockwise");
       if (!this.tetris.validateCoordinatesRotate(nc[0], nc[1])) return false;
     }
@@ -259,13 +259,12 @@ class Tetromino {
       let ny = nc[1];
       // console.log(nx);
       // console.log(dif);
-      if(nx<0){
-        if (dif) dif = Math.max(dif,0-nx);
-        else dif = 0-nx;
-      }
-      else if (nx>=NUMBLOCKS_X){
-        if (dif) dif = Math.min(dif,NUMBLOCKS_X-1-nx);
-        else dif = NUMBLOCKS_X-1-nx;
+      if (nx < 0) {
+        if (dif) dif = Math.max(dif, 0 - nx);
+        else dif = 0 - nx;
+      } else if (nx >= NUMBLOCKS_X) {
+        if (dif) dif = Math.min(dif, NUMBLOCKS_X - 1 - nx);
+        else dif = NUMBLOCKS_X - 1 - nx;
       }
 
       this.cells[i][0] = nx;
@@ -274,22 +273,21 @@ class Tetromino {
       this.blocks[i].y = ny * BLOCKSIZE;
 
       this.tetris.scene[ox][oy] = EMPTY;
-      if (nx < 0){
-        this.tetris.scene[nx+dif][ny] = FALLING;
-      }
-      else if (nx >= NUMBLOCKS_X){
+      if (nx < 0) {
+        this.tetris.scene[nx + dif][ny] = FALLING;
+      } else if (nx >= NUMBLOCKS_X) {
         // console.log(nx);
         // console.log(dif);
-        this.tetris.scene[nx+dif][ny] = FALLING;
-      }
-      else{
+        this.tetris.scene[nx + dif][ny] = FALLING;
+      } else {
         this.tetris.scene[nx][ny] = FALLING;
       }
     }
-    if (dif) for(let i = 0; i<this.cells.length; i++){
-      this.cells[i][0] += dif;
-      this.blocks[i].x = this.cells[i][0] * BLOCKSIZE;
-    }
+    if (dif)
+      for (let i = 0; i < this.cells.length; i++) {
+        this.cells[i][0] += dif;
+        this.blocks[i].x = this.cells[i][0] * BLOCKSIZE;
+      }
     if (centerFn) {
       let nc = centerFn("clockwise");
       this.center = [nc[0], nc[1]];
@@ -511,7 +509,12 @@ function setGameOver(on) {
     centerText = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      "GAME OVER\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " + points.toString() +"\nLines Destroyed: " + lines_done.toString() + "\nPlayer: " + Player_name.textContent,
+      "GAME OVER\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " +
+        points.toString() +
+        "\nLines Destroyed: " +
+        lines_done.toString() +
+        "\nPlayer: " +
+        Player_name.textContent,
       {
         font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
         fill: "#ffffff",
@@ -541,7 +544,7 @@ function updateGame() {
 
   if (gameOverState) {
     if (keyRestart.isDown) resetGame();
-    if(keyMenu.isDown) returnMenu();
+    if (keyMenu.isDown) returnMenu();
     currentMovementTimer = 0;
     return;
   }
@@ -598,7 +601,7 @@ function lockTetromino() {
   if (!destroyed) {
     p_fall.play();
     combo = 0;
-    display_combo.textContent = combo.toString()
+    display_combo.textContent = combo.toString();
   }
   spawn();
 }
@@ -618,35 +621,32 @@ function checkLines(candidateLines) {
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
     display_lines.textContent = lines_done.toString();
-  if(collapsed.length == 1 || collapsed.length == 2){
-    singleLine.play();
-    if (collapsed.length == 2){
-      points += 5;
-      combo += 2;
-    }
-    else if (collapsed.length == 1 && combo != 0){
-      combo += 1;
+    if (collapsed.length == 1 || collapsed.length == 2) {
+      singleLine.play();
+      if (collapsed.length == 2) {
+        points += 5;
+        combo += 2;
+      } else if (collapsed.length == 1 && combo != 0) {
+        combo += 1;
+      }
+      display_points.textContent = points.toString();
+    } else if (collapsed.length == 4) {
+      fulltetris.play();
+      fulltetris.volume = 0.7;
+      points += 25;
+      combo += 4;
+    } else if (collapsed.length == 3) {
+      triple.play();
+      triple.volume = 0.8;
+      points += 15;
+      combo += 3;
     }
     display_points.textContent = points.toString();
   }
-  else if (collapsed.length == 4) {
-    fulltetris.play();
-    fulltetris.volume = 0.7;
-    points += 25;
-    combo += 4;
-  }
-  else if(collapsed.length == 3){
-    triple.play();
-    triple.volume = 0.8;
-    points += 15
-    combo += 3;
-  }
-  display_points.textContent = points.toString();
-}
-  if (combo !=0){
+  if (combo != 0) {
     points += combo * 10;
   }
-  display_combo.textContent = combo.toString()
+  display_combo.textContent = combo.toString();
   return collapsed.length > 0;
 }
 
@@ -693,7 +693,7 @@ function collapse(linesToCollapse) {
   }
 }
 
-function returnMenu(){
+function returnMenu() {
   game.scale.setGameSize(window.innerWidth, window.innerHeight);
   game.state.start("Menu");
 }
