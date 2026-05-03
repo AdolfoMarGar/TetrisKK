@@ -244,18 +244,18 @@ let gameState = {
   update: updateGame,
 };
 
-function loadGame(){
-  game.load.audio('GameOver','assets/sounds/game_gameover.wav');
-  game.load.audio('Theme','assets/sounds/Defense Battle.mp3');
-  game.load.audio('Done_Line','assets/sounds/Done_Line.mp3');
-  game.load.audio('Full_Tetris','assets/sounds/Full_Tetris.mp3');
-  game.load.audio('Piece_Fall','assets/sounds/Piece_Falling.mp3');
-  game.load.audio("Triple",'assets/sounds/se_game_triple.wav');
-  game.load.audio('OK','assets/sounds/se_sys_ok.wav');
+function loadGame() {
+  game.load.audio("GameOver", "assets/sounds/game_gameover.wav");
+  game.load.audio("Theme", "assets/sounds/Defense Battle.mp3");
+  game.load.audio("Done_Line", "assets/sounds/Done_Line.mp3");
+  game.load.audio("Full_Tetris", "assets/sounds/Full_Tetris.mp3");
+  game.load.audio("Piece_Fall", "assets/sounds/Piece_Falling.mp3");
+  game.load.audio("Triple", "assets/sounds/se_game_triple.wav");
+  game.load.audio("OK", "assets/sounds/se_sys_ok.wav");
 }
 
-function CreateSounds(){
-  soundGameOver = game.add.audio('GameOver');
+function CreateSounds() {
+  soundGameOver = game.add.audio("GameOver");
   soundTheme = game.add.audio("Theme");
   singleLine = game.add.audio("Done_Line");
   fulltetris = game.add.audio("Full_Tetris");
@@ -416,7 +416,12 @@ function setGameOver(on) {
     centerText = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      "GAME OVER\nPress R to restart\n\nTotal Points: " + points.toString() +"\nLines Destroyed: " + lines_done.toString() + "\nPlayer: " + Player_name.textContent,
+      "GAME OVER\nPress R to restart\n\nTotal Points: " +
+        points.toString() +
+        "\nLines Destroyed: " +
+        lines_done.toString() +
+        "\nPlayer: " +
+        Player_name.textContent,
       {
         font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
         fill: "#ffffff",
@@ -499,7 +504,7 @@ function lockTetromino() {
     if (touchedLines.indexOf(y) == -1) touchedLines.push(y);
   }
   const destroyed = checkLines(touchedLines);
-  if (!destroyed){
+  if (!destroyed) {
     p_fall.play();
   }
   spawn();
@@ -520,24 +525,22 @@ function checkLines(candidateLines) {
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
     display_lines.textContent = lines_done.toString();
-  if(collapsed.length == 1 || collapsed.length == 2){
-    singleLine.play();
-    if (collapsed.length == 2){
-      points += 5;
+    if (collapsed.length == 1 || collapsed.length == 2) {
+      singleLine.play();
+      if (collapsed.length == 2) {
+        points += 5;
+      }
+    } else if (collapsed.length == 4) {
+      fulltetris.play();
+      fulltetris.volume = 0.7;
+      points += 25;
+    } else if (collapsed.length == 3) {
+      triple.play();
+      triple.volume = 0.8;
+      points += 15;
     }
+    display_points.textContent = points.toString();
   }
-  else if (collapsed.length == 4) {
-    fulltetris.play();
-    fulltetris.volume = 0.7;
-    points += 25;
-  }
-  else if(collapsed.length == 3){
-    triple.play();
-    triple.volume = 0.8;
-    points += 15
-  }
-  display_points.textContent = points.toString();
-}
   return collapsed.length > 0;
 }
 
