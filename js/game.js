@@ -10,7 +10,7 @@ const HUD = document.getElementsByClassName("HUD"); //References the HUD element
 const BLOCKS_PER_TETROMINO = 4;
 const N_BLOCK_TYPES = 7;
 
-// Color de las piezas: blanco
+// Color de las piezas
 const COLOR_BLANCO = 0xffffff;
 const COLOR_GRIS = 0xc0c0c0;
 const COLOR_NEGRO = 0x000000;
@@ -61,6 +61,15 @@ class Tetris {
     if (x < 0 || x >= NUMBLOCKS_X) return false;
     if (y < 0 || y >= NUMBLOCKS_Y) return false;
     if (this.scene[x][y] === OCCUPIED) return false;
+    return true;
+  }
+
+  //special one for rotations
+  validateCoordinatesRotate(x,y){
+    if (y < 0 || y >= NUMBLOCKS_Y) return false;
+    if (x > 0 && x < NUMBLOCKS_X){
+      if (this.scene[x][y] === OCCUPIED) return false;
+    }
     return true;
   }
 }
@@ -178,6 +187,16 @@ class Tetromino {
     return true;
   }
 
+  //Checks Movement for rotation
+  canMoveRotate(coordFn){
+    if(gameOverState) return false;
+    for (let i = 0; i < this.cells.length; i++){
+      let nc = coordFn(i, "clockwise");
+      if (!this.tetris.validateCoordinatesRotate(nc[0], nc[1])) return false;
+    }
+    return true;
+  }
+
   // Calcula la nueva coordenada de un bloque de la pieza al moverla en una dirección.
   slide(block, dir) {
     return [
@@ -225,6 +244,54 @@ class Tetromino {
     }
     if (centerFn) {
       let nc = centerFn(dir);
+      this.center = [nc[0], nc[1]];
+    }
+  }
+
+  //Special one for rotations
+  moveRotate(coordFn, centerFn) {
+    let dif = undefined;
+    for (let i = 0; i < this.cells.length; i++) {
+      let ox = this.cells[i][0];
+      let oy = this.cells[i][1];
+      let nc = coordFn(i, "clockwise");
+      let nx = nc[0];
+      let ny = nc[1];
+      // console.log(nx);
+      // console.log(dif);
+      if(nx<0){
+        if (dif) dif = Math.max(dif,0-nx);
+        else dif = 0-nx;
+      }
+      else if (nx>=NUMBLOCKS_X){
+        if (dif) dif = Math.min(dif,NUMBLOCKS_X-1-nx);
+        else dif = NUMBLOCKS_X-1-nx;
+      }
+
+      this.cells[i][0] = nx;
+      this.cells[i][1] = ny;
+      this.blocks[i].x = nx * BLOCKSIZE;
+      this.blocks[i].y = ny * BLOCKSIZE;
+
+      this.tetris.scene[ox][oy] = EMPTY;
+      if (nx < 0){
+        this.tetris.scene[nx+dif][ny] = FALLING;
+      }
+      else if (nx >= NUMBLOCKS_X){
+        // console.log(nx);
+        // console.log(dif);
+        this.tetris.scene[nx+dif][ny] = FALLING;
+      }
+      else{
+        this.tetris.scene[nx][ny] = FALLING;
+      }
+    }
+    if (dif) for(let i = 0; i<this.cells.length; i++){
+      this.cells[i][0] += dif;
+      this.blocks[i].x = this.cells[i][0] * BLOCKSIZE;
+    }
+    if (centerFn) {
+      let nc = centerFn("clockwise");
       this.center = [nc[0], nc[1]];
     }
   }
@@ -295,14 +362,16 @@ function unrenderBlockPreview() {
 
 // Elements for the game
 let tetromino, theTetris;
-let cursors, keyRotate, keyRestart;
+let cursors, keyRotate, keyRestart, keyMenu;
 let gameOverState = false;
 let nextForma = null;
 let timer, loop;
 let currentMovementTimer = 0;
 let shade, centerText;
 let points = 0,
-  lines_done = 0;
+  lines_done = 0,
+  combo = 0;
+const display_combo = document.getElementById("combo");
 const display_points = document.getElementById("puntos");
 const display_lines = document.getElementById("lines");
 const Player_name = document.getElementById("player");
@@ -332,8 +401,10 @@ function resetGame() {
   currentMovementTimer = 0;
   points = 0;
   lines_done = 0;
+  combo = 0;
   display_points.textContent = points.toString();
   display_lines.textContent = lines_done.toString();
+  display_combo.textContent = combo.toString();
   nextForma = null;
   // Create Trellis and initialisation of its grid
   theTetris = new Tetris();
@@ -358,7 +429,7 @@ function resetGame() {
   cursors = game.input.keyboard.createCursorKeys();
   keyRotate = game.input.keyboard.addKey(Phaser.Keyboard.UP);
   keyRestart = game.input.keyboard.addKey(Phaser.Keyboard.R);
-  keyMenu = game.input.keyboard.addKey(Phaser.Keyboard.M);
+  keyMenu = game.input.keyboard.addKey(Phaser.Keyboard.T);
 
   // timer
   // IMPORTANTE: si venimos de un game over, el Timer andará pausado.
@@ -440,12 +511,7 @@ function setGameOver(on) {
     centerText = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      "GAME OVER\nPress R to restart\nPress M to menu\n\nTotal Points: " +
-        points.toString() +
-        "\nLines Destroyed: " +
-        lines_done.toString() +
-        "\nPlayer: " +
-        Player_name.textContent,
+      "GAME OVER\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " + points.toString() +"\nLines Destroyed: " + lines_done.toString() + "\nPlayer: " + Player_name.textContent,
       {
         font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
         fill: "#ffffff",
@@ -475,10 +541,7 @@ function updateGame() {
 
   if (gameOverState) {
     if (keyRestart.isDown) resetGame();
-    if (keyMenu.isDown) {
-      game.scale.setGameSize(ANCHO_MENU, ALTO_MENU);
-      game.state.start("Menu");
-    }
+    if(keyMenu.isDown) returnMenu();
     currentMovementTimer = 0;
     return;
   }
@@ -512,8 +575,8 @@ function updateGame() {
     );
   } else if (keyRotate.isDown) {
     // O piece rotation is pointless, but harmless
-    if (tetromino.canMove(tetromino.rotate.bind(tetromino), "clockwise"))
-      tetromino.move(tetromino.rotate.bind(tetromino), null, "clockwise");
+    if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino)))
+      tetromino.moveRotate(tetromino.rotate.bind(tetromino), null, "clockwise");
   }
 
   currentMovementTimer = 0;
@@ -534,6 +597,8 @@ function lockTetromino() {
   const destroyed = checkLines(touchedLines);
   if (!destroyed) {
     p_fall.play();
+    combo = 0;
+    display_combo.textContent = combo.toString()
   }
   spawn();
 }
@@ -553,22 +618,35 @@ function checkLines(candidateLines) {
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
     display_lines.textContent = lines_done.toString();
-    if (collapsed.length == 1 || collapsed.length == 2) {
-      singleLine.play();
-      if (collapsed.length == 2) {
-        points += 5;
-      }
-    } else if (collapsed.length == 4) {
-      fulltetris.play();
-      fulltetris.volume = 0.7;
-      points += 25;
-    } else if (collapsed.length == 3) {
-      triple.play();
-      triple.volume = 0.8;
-      points += 15;
+  if(collapsed.length == 1 || collapsed.length == 2){
+    singleLine.play();
+    if (collapsed.length == 2){
+      points += 5;
+      combo += 2;
+    }
+    else if (collapsed.length == 1 && combo != 0){
+      combo += 1;
     }
     display_points.textContent = points.toString();
   }
+  else if (collapsed.length == 4) {
+    fulltetris.play();
+    fulltetris.volume = 0.7;
+    points += 25;
+    combo += 4;
+  }
+  else if(collapsed.length == 3){
+    triple.play();
+    triple.volume = 0.8;
+    points += 15
+    combo += 3;
+  }
+  display_points.textContent = points.toString();
+}
+  if (combo !=0){
+    points += combo * 10;
+  }
+  display_combo.textContent = combo.toString()
   return collapsed.length > 0;
 }
 
@@ -613,4 +691,9 @@ function collapse(linesToCollapse) {
       theTetris.sceneBlocks[x2][0] = null;
     }
   }
+}
+
+function returnMenu(){
+  game.scale.setGameSize(window.innerWidth, window.innerHeight);
+  game.state.start("Menu");
 }
