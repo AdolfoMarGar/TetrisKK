@@ -1,21 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tetris UJI (minimal)</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-  <div id="wrap">
-    <div>
-      <div id="game"></div>
-      <div class="HUD">Points = <span id = "puntos">0</span> Lines eliminated = <span id="lines">0</span></div>
-      <div class="Nombre">Player = <span id="player" style="cursor: pointer; color: rgb(226, 112, 19);">Leon S. Kennedy</span></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tetris UJI (minimal)</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="wrap">
+      <div>
+        <div id="game"></div>
+        <div class="HUD">
+          Points = <span id="puntos">0</span> Lines eliminated =
+          <span id="lines">0</span>
+        </div>
+        <div class="Nombre">
+          Nombre =
+          <span id="player" style="cursor: pointer; color: rgb(124, 57, 2)"
+            >Leon S. Kennedy</span
+          >
+        </div>
+        <div class="lvl">Nivel seleccionado = <span id="lvlSelected">1</span></div>
+        <div class="HUD">Current combo = <span id="combo">0</span></div>
+      </div>
     </div>
-  </div>
-  <script src="js/lib/phaser.js"></script>
-  <script src="js/game.js"></script>
-  <script src="js/main.js"></script>
-</body>
+    <script src="js/lib/phaser.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>
