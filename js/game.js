@@ -294,6 +294,9 @@ function unrenderBlockPreview() {
 }
 
 // Elements for the game
+let isPaused = false;
+let isMuted = false;
+let btnPause, btnMute;
 let tetromino, theTetris;
 let cursors, keyRotate, keyRestart;
 let gameOverState = false;
@@ -352,6 +355,27 @@ function resetGame() {
     bg.moveTo(0, y * BLOCKSIZE);
     bg.lineTo(gameWidth, y * BLOCKSIZE);
   } //Que hace este bucle?
+
+  btnPause = game.add.text(window.innerWidth, 200, 'PAUSA', {
+    font: 'bold 18px Arial',
+    fill: '#ffffff',
+    backgroundColor: '#333333'
+  });
+  btnPause.padding.set(8, 4);
+  btnPause.inputEnabled = true;
+  btnPause.input.useHandCursor = true;
+  btnPause.events.onInputDown.add(togglePause, this);
+
+  btnMute = game.add.text(gameWidth + 100, 250, 'SONIDO: ON', {
+    font: 'bold 16px Arial',
+    fill: '#ffffff',
+    backgroundColor: '#333333'
+  });
+  btnMute.padding.set(8, 4);
+  btnMute.inputEnabled = true;
+  btnMute.input.useHandCursor = true;
+  btnMute.events.onInputDown.add(toggleMute, this);
+
 
   // input
   cursors = game.input.keyboard.createCursorKeys();
@@ -580,6 +604,32 @@ function collapse(linesToCollapse) {
     for (let x2 = 0; x2 < NUMBLOCKS_X; x2++) {
       theTetris.scene[x2][0] = EMPTY;
       theTetris.sceneBlocks[x2][0] = null;
+    }
+  }
+}
+
+function togglePause() {
+  if (gameOverState) {
+    return; // Si el juego ha terminado, no hacemos nada y salimos de la función
+  }
+
+  // Comprobamos el estado actual para cambiarlo al contrario
+  if (isPaused === false) {
+    // Si no estaba pausado, ahora lo pausamos
+    isPaused = true;
+    timer.pause(); 
+    btnPause.text = "REANUDAR";
+    btnPause.fill = "#ffcc00"; 
+    makeShade(0.5); 
+  } 
+  else {
+    // Si estaba pausado, ahora lo reanudamos
+    isPaused = false;
+    timer.resume();
+    btnPause.text = "PAUSA";
+    btnPause.fill = "#ffffff";
+    if (shade) {
+      shade.destroy();
     }
   }
 }
