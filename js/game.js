@@ -362,6 +362,9 @@ function unrenderBlockPreview() {
 }
 
 // Elements for the game
+let isPaused = false;
+let isMuted = false;
+let btnPause, btnMute;
 let tetromino, theTetris;
 let cursors, keyRotate, keyRestart, keyMenu;
 let gameOverState = false;
@@ -449,6 +452,27 @@ function resetGame() {
     bg.moveTo(0, y * BLOCKSIZE);
     bg.lineTo(gameWidth, y * BLOCKSIZE);
   } //Que hace este bucle?
+
+  btnPause = game.add.text(window.innerWidth, 200, 'PAUSA', {
+    font: 'bold 18px Arial',
+    fill: '#ffffff',
+    backgroundColor: '#333333'
+  });
+  btnPause.padding.set(8, 4);
+  btnPause.inputEnabled = true;
+  btnPause.input.useHandCursor = true;
+  btnPause.events.onInputDown.add(togglePause, this);
+
+  btnMute = game.add.text(gameWidth + 100, 250, 'SONIDO: ON', {
+    font: 'bold 16px Arial',
+    fill: '#ffffff',
+    backgroundColor: '#333333'
+  });
+  btnMute.padding.set(8, 4);
+  btnMute.inputEnabled = true;
+  btnMute.input.useHandCursor = true;
+  btnMute.events.onInputDown.add(toggleMute, this);
+
 
   // input
   cursors = game.input.keyboard.createCursorKeys();
@@ -720,10 +744,4 @@ function collapse(linesToCollapse) {
   }
 }
 
-function returnMenu() {
-  for (const h of HUD) {
-    h.style.display = "none";
-  }
-  game.scale.setGameSize(window.innerWidth * 0.85, window.innerHeight * 0.85);
-  game.state.start("Menu");
-}
+
