@@ -786,6 +786,11 @@ window.onload = function () {
   }
 };
 function returnMenu() {
-  game.scale.setGameSize(window.innerWidth*0.85, window.innerHeight*0.85);
+  for (const h of HUD) {
+    h.style.display = "none";
+  }
+  document.getElementById("btn_pausa").style.display = "none";
+  document.getElementById("btn-mute-html").style.display = "none";
+  game.scale.setGameSize(window.innerWidth * 0.85, window.innerHeight * 0.85);
   game.state.start("Menu");
 }
