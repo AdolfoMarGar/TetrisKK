@@ -177,7 +177,7 @@ let rankingState = {
         game.add.text(
           100,
           50 + 50 * index,
-          `${index + 1}. ${entrada.nombre}: ${entrada.puntos}`,
+          `${index + 1}. ${entrada.nombre}: ${entrada.puntos} points in level ${entrada.nivel}`,
           {
             fill: "#000000",
             font: "bold 24px Arial",

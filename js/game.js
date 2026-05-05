@@ -525,6 +525,7 @@ function manageRanking() {
   let nuevaEntrada = {
     nombre: Player_name.textContent,
     puntos: parseInt(Player_points.textContent) || 0,
+    nivel : levelToPlay
   };
 
   lista.push(nuevaEntrada);
