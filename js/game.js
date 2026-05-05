@@ -24,15 +24,7 @@ const COLOR_AMARILLO = 0xffff00;
 const COLOR_NARANJA = 0xffa500;
 const COLOR_PURPURA = 0x800080;
 const COLOR_CYAN = 0x00ffff;
-const COLOR_TETROMINO = {
-  0: COLOR_AZUL,
-  1: COLOR_ROJO,
-  2: COLOR_VERDE,
-  3: COLOR_AMARILLO,
-  4: COLOR_NARANJA,
-  5: COLOR_PURPURA,
-  6: COLOR_CYAN,
-};
+let color_tetromino = {};
 
 // Scene grid values
 const EMPTY = 0;
@@ -172,7 +164,7 @@ class Tetromino {
     for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
       let x_preview = c_x + this.offsets[this.shape][i][0];
       let y_preview = c_y + this.offsets[this.shape][i][1];
-      let color = COLOR_TETROMINO[this.shape];
+      let color = color_tetromino[this.shape];
 
       let b_preview = this.renderBlock(color);
       b_preview.x = x_preview * BLOCKSIZE; // Posición correcta
@@ -403,6 +395,9 @@ function prepareLevelToPlay() {
       gameWidth = NUMBLOCKS_X * BLOCKSIZE;
       game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
 
+      for (let id in levelConfig.coloresPiezas) {
+        color_tetromino[parseInt(id)] = parseInt(levelConfig.coloresPiezas[id]);
+      }
       console.log("Configuración del nivel cargada correctamente desde texto.");
     } catch (error) {
       console.error("Error al parsear el JSON del nivel:", error);
@@ -493,7 +488,7 @@ function spawn() {
   }
 
   let shape = nextForma;
-  let color = COLOR_TETROMINO[nextForma];
+  let color = color_tetromino[nextForma];
   tetromino = new Tetromino(shape, color, theTetris);
 
   let start_x = Math.floor(NUMBLOCKS_X / 2);
