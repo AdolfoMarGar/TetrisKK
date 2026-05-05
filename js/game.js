@@ -506,9 +506,14 @@ function spawn() {
 }
 function manageRanking() {
   let datosCargados = localStorage.getItem("ranking_local");
-  let lista = datosCargados
-    ? JSON.parse(datosCargados)
-    : game.cache.getJSON("datos_ranking");
+  let lista;
+  if (datosCargados !== null) {
+    lista = JSON.parse(datosCargados);
+    console.log("Cargando datos desde LocalStorage");
+  } else {
+    lista = [];
+    console.log("No hay datos previos, creando lista nueva");
+  }
 
   let nuevaEntrada = {
     nombre: Player_name.textContent,
