@@ -23,3 +23,12 @@ body {
 .HUD {
   display: none;
 }
+.controles_externos {
+    position: absolute;
+    right: 300px; 
+    top: 50px;   
+    display: none;
+
+    flex-direction: column;
+    gap: 15px;
+}
