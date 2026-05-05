@@ -21,6 +21,7 @@ let menuState = {
     game.load.image("volver", "assets/volver1.png");
     game.load.image("num1", "assets/num1.png");
     game.load.image("num2", "assets/num2.png");
+    // this.load.json("datos_ranking", "assets/ranking.json");
   },
   create: function () {
     // game.scale.setGameSize(window.innerWidth, window.innerHeight);
@@ -165,16 +166,13 @@ let rankingState = {
     if (datosGuardados) {
       lista = JSON.parse(datosGuardados);
       console.log("Cargando datos desde LocalStorage");
-    } else {
-      lista = game.cache.getJSON("datos_ranking");
-      console.log("Cargando datos desde el archivo JSON");
-    }
+    } 
 
     let fondo = game.add.sprite(0, 0, "fondoR");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
 
-    if (lista) {
+    if (lista && lista.length > 0) {
       lista.forEach((entrada, index) => {
         game.add.text(
           100,
