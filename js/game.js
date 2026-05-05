@@ -417,7 +417,7 @@ function resetGame() {
     h.style.display = "block";
   }
   for (const c of CONTROLES) {
-    c.style.display = "flex"; 
+    c.style.display = "flex";
   }
   //Create the sounds themselves.
   CreateSounds();
@@ -456,9 +456,6 @@ function resetGame() {
     bg.moveTo(0, y * BLOCKSIZE);
     bg.lineTo(gameWidth, y * BLOCKSIZE);
   } //Que hace este bucle?
-
-
-
 
   // input
   cursors = game.input.keyboard.createCursorKeys();
@@ -581,7 +578,7 @@ function makeShade(alpha) {
 
 // Bucle de actualización para leer input y mover la pieza
 function updateGame() {
-  if ( isPaused) return;
+  if (isPaused) return;
   currentMovementTimer += this.time.elapsed;
   if (currentMovementTimer <= MOVEMENT_LAG) return;
 
@@ -736,60 +733,59 @@ function collapse(linesToCollapse) {
   }
 }
 
-function pausar (){
-  if(gameOverState) return;
-  if (!isPaused){
-    isPaused=true;
+function pausar() {
+  if (gameOverState) return;
+  if (!isPaused) {
+    isPaused = true;
     timer.pause();
-    
-  }
-  else{
-    isPaused=false;
+  } else {
+    isPaused = false;
     timer.resume();
-    
   }
 }
 
-function mutear(){
-   if (!isMuted){
-    isMuted=true;
-    game.sound.mute=true;
-   }
-   else{
-    isMuted=false;
-    game.sound.mute=false;
-   }
+function mutear() {
+  if (!isMuted) {
+    isMuted = true;
+    game.sound.mute = true;
+  } else {
+    isMuted = false;
+    game.sound.mute = false;
+  }
 }
 
-window.onload = function() {
-    
-    const btnPausa = document.getElementById('btn_pausa');
-    const btnMute = document.getElementById('btn-mute-html');
-    if (btnPausa) {
-        btnPausa.onclick = function() {
-            pausar(); // Esta es la función que  detiene el timer y el update
-            
-            // Actualizamos el texto del botón según el estado
-            if (isPaused) {
-                this.innerText = "REANUDAR";
-                this.style.backgroundColor = "#0d79ed"; 
-            } else {
-                this.innerText = "PAUSA";
-                this.style.backgroundColor = "#f7eeee"; 
-            }
-        };
-    }
+window.onload = function () {
+  const btnPausa = document.getElementById("btn_pausa");
+  const btnMute = document.getElementById("btn-mute-html");
+  if (btnPausa) {
+    btnPausa.onclick = function () {
+      pausar(); // Esta es la función que  detiene el timer y el update
+
+      // Actualizamos el texto del botón según el estado
+      if (isPaused) {
+        this.innerText = "REANUDAR";
+        this.style.backgroundColor = "#0d79ed";
+      } else {
+        this.innerText = "PAUSA";
+        this.style.backgroundColor = "#f7eeee";
+      }
+    };
+  }
   if (btnMute) {
-        btnMute.onclick = function() {
-            mutear(); 
-            
-            if (isMuted) {
-                this.innerText = "MÚSICA: OFF";
-                this.style.backgroundColor = "#ff4444"; 
-            } else {
-                this.innerText = "MÚSICA: ON";
-                this.style.backgroundColor = "#f7eeee"; 
-            }
-        };
-    }
+    btnMute.onclick = function () {
+      mutear();
+
+      if (isMuted) {
+        this.innerText = "MÚSICA: OFF";
+        this.style.backgroundColor = "#ff4444";
+      } else {
+        this.innerText = "MÚSICA: ON";
+        this.style.backgroundColor = "#f7eeee";
+      }
+    };
+  }
+};
+function returnMenu() {
+  game.scale.setGameSize(window.innerWidth*0.85, window.innerHeight*0.85);
+  game.state.start("Menu");
 }
