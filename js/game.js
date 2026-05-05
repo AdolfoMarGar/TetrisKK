@@ -6,6 +6,7 @@ const MOVEMENT_LAG = 85; // ms (soft key repeat)
 let fall_delay = 600; // ms
 let necesaryPoints = 100; // ms
 const HUD = document.getElementsByClassName("HUD"); //References the HUD elements.
+const CONTROLES = document.getElementsByClassName("controles_externos");
 let levelsData = ["assets/levels/level01.json", "assets/levels/level02.json"];
 
 // 7 tetrominoes, rotation around a center cell
@@ -362,14 +363,14 @@ function unrenderBlockPreview() {
 }
 
 // Elements for the game
-let isPaused = false;
-let isMuted = false;
-let btnPause, btnMute;
+
 let tetromino, theTetris;
 let cursors, keyRotate, keyRestart, keyMenu;
 let gameOverState = false;
 let nextForma = null;
 let timer, loop;
+let isPaused = false;
+let isMuted = false;
 let currentMovementTimer = 0;
 let shade, centerText;
 let points = 0,
@@ -415,6 +416,9 @@ function resetGame() {
   for (const h of HUD) {
     h.style.display = "block";
   }
+  for (const c of CONTROLES) {
+    c.style.display = "flex"; 
+  }
   //Create the sounds themselves.
   CreateSounds();
   soundTheme.loop = true;
@@ -453,25 +457,7 @@ function resetGame() {
     bg.lineTo(gameWidth, y * BLOCKSIZE);
   } //Que hace este bucle?
 
-  btnPause = game.add.text(window.innerWidth, 200, 'PAUSA', {
-    font: 'bold 18px Arial',
-    fill: '#ffffff',
-    backgroundColor: '#333333'
-  });
-  btnPause.padding.set(8, 4);
-  btnPause.inputEnabled = true;
-  btnPause.input.useHandCursor = true;
-  btnPause.events.onInputDown.add(togglePause, this);
 
-  btnMute = game.add.text(gameWidth + 100, 250, 'SONIDO: ON', {
-    font: 'bold 16px Arial',
-    fill: '#ffffff',
-    backgroundColor: '#333333'
-  });
-  btnMute.padding.set(8, 4);
-  btnMute.inputEnabled = true;
-  btnMute.input.useHandCursor = true;
-  btnMute.events.onInputDown.add(toggleMute, this);
 
 
   // input
@@ -595,6 +581,7 @@ function makeShade(alpha) {
 
 // Bucle de actualización para leer input y mover la pieza
 function updateGame() {
+  if ( isPaused) return;
   currentMovementTimer += this.time.elapsed;
   if (currentMovementTimer <= MOVEMENT_LAG) return;
 
@@ -749,4 +736,60 @@ function collapse(linesToCollapse) {
   }
 }
 
+function pausar (){
+  if(gameOverState) return;
+  if (!isPaused){
+    isPaused=true;
+    timer.pause();
+    
+  }
+  else{
+    isPaused=false;
+    timer.resume();
+    
+  }
+}
 
+function mutear(){
+   if (!isMuted){
+    isMuted=true;
+    game.sound.mute=true;
+   }
+   else{
+    isMuted=false;
+    game.sound.mute=false;
+   }
+}
+
+window.onload = function() {
+    
+    const btnPausa = document.getElementById('btn_pausa');
+    const btnMute = document.getElementById('btn-mute-html');
+    if (btnPausa) {
+        btnPausa.onclick = function() {
+            pausar(); // Esta es la función que  detiene el timer y el update
+            
+            // Actualizamos el texto del botón según el estado
+            if (isPaused) {
+                this.innerText = "REANUDAR";
+                this.style.backgroundColor = "#0d79ed"; 
+            } else {
+                this.innerText = "PAUSA";
+                this.style.backgroundColor = "#f7eeee"; 
+            }
+        };
+    }
+  if (btnMute) {
+        btnMute.onclick = function() {
+            mutear(); 
+            
+            if (isMuted) {
+                this.innerText = "MÚSICA: OFF";
+                this.style.backgroundColor = "#ff4444"; 
+            } else {
+                this.innerText = "MÚSICA: ON";
+                this.style.backgroundColor = "#f7eeee"; 
+            }
+        };
+    }
+}
