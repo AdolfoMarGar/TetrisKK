@@ -525,7 +525,8 @@ function manageRanking() {
   let nuevaEntrada = {
     nombre: Player_name.textContent,
     puntos: parseInt(Player_points.textContent) || 0,
-    nivel : levelToPlay
+    nivel : levelToPlay,
+    tiempo: Math.round(timer.seconds)
   };
 
   lista.push(nuevaEntrada);
@@ -543,6 +544,7 @@ function manageRanking() {
 function setGameOver(on) {
   gameOverState = on;
   if (gameOverState) {
+    //console.log(timer);
     manageRanking();
     timer.pause();
     makeShade(0.65);
