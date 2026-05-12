@@ -310,7 +310,6 @@ function loadGame() {
   game.load.audio("Full_Tetris", "assets/sounds/Full_Tetris.mp3");
   game.load.audio("Piece_Fall", "assets/sounds/Piece_Falling.mp3");
   game.load.audio("Triple", "assets/sounds/se_game_triple.wav");
-  game.load.audio("OK", "assets/sounds/se_sys_ok.wav");
   loadLevel(levelToPlay);
 }
 

@@ -7,6 +7,11 @@ const ALTURA_2 = ALTO_MENU * 0.7;
 const IMG = 300;
 let levelToPlay = 1;
 let button;
+function SoundOK(){
+    let SoundOK = game.add.sound("OK");
+    SoundOK.volume = 0.2;
+    SoundOK.play();
+}
 
 let menuState = {
   preload: function () {
@@ -22,6 +27,7 @@ let menuState = {
     game.load.image("volver", "assets/volver1.png");
     game.load.image("num1", "assets/num1.png");
     game.load.image("num2", "assets/num2.png");
+    game.load.audio("OK", "assets/sounds/se_sys_ok.wav");
     // this.load.json("datos_ranking", "assets/ranking.json");
   },
   create: function () {
@@ -72,12 +78,15 @@ let menuState = {
     game.state.start("Game");
   },
   verCreditos: function () {
+    SoundOK();
     game.state.start("Creditos");
   },
   verNiveles: function () {
+    SoundOK();
     game.state.start("Niveles");
   },
   verRanking: function () {
+    SoundOK();
     game.state.start("Ranking");
   },
 };
@@ -109,6 +118,7 @@ let creditosState = {
     botonVolver.anchor.setTo(0.5, 0.5);
   },
   volverMenu: function () {
+    SoundOK();
     game.state.start("Menu");
   },
   configurarImagen: function (img) {
@@ -152,10 +162,12 @@ let nivelesState = {
     botonVolver2.anchor.setTo(0.5, 0.5);
   },
   seleccionarNivel: function (boton) {
+    SoundOK();
     levelToPlay = boton.numNivel;
     document.getElementById("lvlSelected").textContent = levelToPlay;
   },
   volverMenu: function () {
+    SoundOK();
     game.state.start("Menu");
   },
 };
@@ -199,11 +211,13 @@ let rankingState = {
     botonVolver2.anchor.setTo(0.5, 0.5);
   },
   volverMenu: function () {
+    SoundOK();
     game.state.start("Menu");
   },
 };
 let ButtonState = {
   create:function(){
+    SoundOK();
     let lista, contador = 0;
     let datosGuardados = localStorage.getItem("ranking_local");
     if (datosGuardados) {
@@ -241,6 +255,7 @@ let ButtonState = {
     );
   },
   volverRanking: function(){
+    SoundOK();
     game.state.start("Ranking");
   }
 };
