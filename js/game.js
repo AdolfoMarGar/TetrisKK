@@ -546,7 +546,7 @@ function setGameOver(on) {
     manageRanking();
     timer.pause();
     makeShade(0.65);
-    if (puntosNecesarios <= Player_points.textContent) {
+    if (points >= puntosNecesarios) {
       centerText = game.add.text(
         game.world.centerX,
         game.world.centerY,
