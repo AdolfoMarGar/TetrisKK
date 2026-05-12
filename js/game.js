@@ -546,6 +546,7 @@ function setGameOver(on) {
     timer.pause();
     makeShade(0.65);
     if (puntosNecesarios <= Player_points.textContent) {
+      display_points.textContent = points.toString();
       centerText = game.add.text(
         game.world.centerX,
         game.world.centerY,
@@ -562,6 +563,7 @@ function setGameOver(on) {
         },
       );
     } else {
+      display_points.textContent = points.toString();
       centerText = game.add.text(
         game.world.centerX,
         game.world.centerY,
@@ -691,7 +693,7 @@ function checkLines(candidateLines) {
       } else if (collapsed.length == 1 && combo != 0) {
         combo += 1;
       }
-      display_points.textContent = points.toString();
+      //display_points.textContent = points.toString();
     } else if (collapsed.length == 4) {
       fulltetris.play();
       fulltetris.volume = 0.7;
