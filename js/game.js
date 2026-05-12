@@ -682,6 +682,7 @@ function checkLines(candidateLines) {
     }
   }
   if (collapsed.length) {
+    animacionTablero(collapse.length);
     collapse(collapsed);
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
@@ -814,8 +815,27 @@ function returnMenu() {
   for (const h of HUD) {
     h.style.display = "none";
   }
-  document.getElementById("btn_pausa").style.display = "none";
-  document.getElementById("btn-mute-html").style.display = "none";
+    for (const c of CONTROLES) {
+    c.style.display = "none";
+  }
   game.scale.setGameSize(window.innerWidth * 0.85, window.innerHeight * 0.85);
   game.state.start("Menu");
+};
+
+function animacionTablero(candidateLines){
+  let intensidad=0;
+  let duracion=0;
+  if ( candidateLines ==1){
+    intensidad=0.05;
+    duracion=100; //0.1 segundos 
+  }
+  else if(candidateLines==2) {
+    intensidad=0.1;
+    duracion=200;
+  }
+  else if(candidateLines>=3) {
+    intensidad=0.12;
+    duracion=300;
+  }
+  game.camera.shake(intensidad,duracion);
 }
