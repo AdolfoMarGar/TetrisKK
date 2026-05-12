@@ -4,7 +4,7 @@ let NUMBLOCKS_X = 10; // classic width
 const NUMBLOCKS_Y = 20; // classic height
 const MOVEMENT_LAG = 85; // ms (soft key repeat)
 let fall_delay = 600; // ms
-let necesaryPoints = 100; // ms
+let puntosNecesarios = 100; // ms
 const HUD = document.getElementsByClassName("HUD"); //References the HUD elements.
 const CONTROLES = document.getElementsByClassName("controles_externos");
 let levelsData = ["assets/levels/level01.json", "assets/levels/level02.json"];
@@ -390,7 +390,7 @@ function prepareLevelToPlay() {
       levelConfig = JSON.parse(nivelTexto);
 
       fall_delay = levelConfig.timerFall;
-      necesaryPoints = levelConfig.necessaryPoints;
+      puntosNecesarios = levelConfig.puntosNecesarios;
       NUMBLOCKS_X = levelConfig.bloquesAnchoJugable;
       gameWidth = NUMBLOCKS_X * BLOCKSIZE;
       game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
@@ -540,21 +540,39 @@ function setGameOver(on) {
     manageRanking();
     timer.pause();
     makeShade(0.65);
-    centerText = game.add.text(
-      game.world.centerX,
-      game.world.centerY,
-      "GAME OVER\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " +
-        points.toString() +
-        "\nLines Destroyed: " +
-        lines_done.toString() +
-        "\nPlayer: " +
-        Player_name.textContent,
-      {
-        font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
-        fill: "#ffffff",
-        align: "center",
-      },
-    );
+    if (puntosNecesarios <= Player_points.textContent) {
+      centerText = game.add.text(
+        game.world.centerX,
+        game.world.centerY,
+        "LEVEL COMPLETE!\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " +
+          points.toString() +
+          "\nLines Destroyed: " +
+          lines_done.toString() +
+          "\nPlayer: " +
+          Player_name.textContent,
+        {
+          font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
+          fill: "#ffffff",
+          align: "center",
+        },
+      );
+    } else {
+      centerText = game.add.text(
+        game.world.centerX,
+        game.world.centerY,
+        "GAME OVER\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " +
+          points.toString() +
+          "\nLines Destroyed: " +
+          lines_done.toString() +
+          "\nPlayer: " +
+          Player_name.textContent,
+        {
+          font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
+          fill: "#ffffff",
+          align: "center",
+        },
+      );
+    }
     centerText.anchor.set(0.5);
     soundTheme.stop();
     soundTheme.loop = false;
@@ -573,6 +591,11 @@ function makeShade(alpha) {
 
 // Bucle de actualización para leer input y mover la pieza
 function updateGame() {
+  console.log(points);
+  console.log(puntosNecesarios);
+   if (points >= puntosNecesarios) {
+    setGameOver(true);
+  }
   if (isPaused) return;
   currentMovementTimer += this.time.elapsed;
   if (currentMovementTimer <= MOVEMENT_LAG) return;
