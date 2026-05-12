@@ -546,6 +546,8 @@ function setGameOver(on) {
     timer.pause();
     makeShade(0.65);
     if (puntosNecesarios <= Player_points.textContent) {
+      soundGameOver.play();
+      soundGameOver.volume = 0.4;
       display_points.textContent = points.toString();
       centerText = game.add.text(
         game.world.centerX,
@@ -564,6 +566,8 @@ function setGameOver(on) {
       );
     } else {
       display_points.textContent = points.toString();
+      soundGameOver.play();
+      soundGameOver.volume = 0.4;
       centerText = game.add.text(
         game.world.centerX,
         game.world.centerY,
@@ -583,8 +587,8 @@ function setGameOver(on) {
     centerText.anchor.set(0.5);
     soundTheme.stop();
     soundTheme.loop = false;
-    soundGameOver.play();
-    soundGameOver.volume = 0.4;
+    // soundGameOver.play();
+    // soundGameOver.volume = 0.4;
   }
 }
 
@@ -599,7 +603,7 @@ function makeShade(alpha) {
 // Bucle de actualización para leer input y mover la pieza
 function updateGame() {
    if (points >= puntosNecesarios) {
-    setGameOver(true);
+    PartidaGanada();
   }
   if (isPaused) return;
   currentMovementTimer += this.time.elapsed;
@@ -836,4 +840,8 @@ function animacionTablero(candidateLines){
     duracion=300;
   }
   game.camera.shake(intensidad,duracion);
+}
+
+function PartidaGanada(){
+  if (!gameOverState){setGameOver(true);}
 }
