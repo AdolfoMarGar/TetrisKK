@@ -2,8 +2,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #a3a3a3;
-  color: #000000;
+  background:linear-gradient(rgba(119, 114, 114, 0.677), rgba(239, 224, 224, 0)),url('../assets/fondof.jpg') no-repeat center center fixed;
+  color: #0e0101;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
