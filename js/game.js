@@ -1,6 +1,6 @@
 // --- Config ---
 const BLOCKSIZE = 28; // px
-let NUMBLOCKS_X = 10; // classic width
+let numblocks_x = 10; // classic width
 const NUMBLOCKS_Y = 20; // classic height
 const MOVEMENT_LAG = 85; // ms (soft key repeat)
 let fall_delay = 600; // ms
@@ -11,7 +11,7 @@ let levelsData = ["assets/levels/level01.json", "assets/levels/level02.json"];
 
 // 7 tetrominoes, rotation around a center cell
 const BLOCKS_PER_TETROMINO = 4;
-const N_BLOCK_TYPES = 7;
+let n_block_types = 7;
 
 // Color de las piezas
 const COLOR_BLANCO = 0xffffff;
@@ -39,7 +39,7 @@ class Tetris {
 
   // Inicializa la matriz lógica del tablero y la matriz de referencias a bloques ya fijados.
   initGrid() {
-    for (let x = 0; x < NUMBLOCKS_X; x++) {
+    for (let x = 0; x < numblocks_x; x++) {
       let col = [];
       let colBlocks = [];
       for (let y = 0; y < NUMBLOCKS_Y; y++) {
@@ -53,7 +53,7 @@ class Tetris {
 
   // Comprueba si una celda está dentro del tablero y no está ocupada por bloques ya fijados.
   validateCoordinates(x, y) {
-    if (x < 0 || x >= NUMBLOCKS_X) return false;
+    if (x < 0 || x >= numblocks_x) return false;
     if (y < 0 || y >= NUMBLOCKS_Y) return false;
     if (this.scene[x][y] === OCCUPIED) return false;
     return true;
@@ -62,7 +62,7 @@ class Tetris {
   //special one for rotations
   validateCoordinatesRotate(x, y) {
     if (y < 0 || y >= NUMBLOCKS_Y) return false;
-    if (x > 0 && x < NUMBLOCKS_X) {
+    if (x > 0 && x < numblocks_x) {
       if (this.scene[x][y] === OCCUPIED) return false;
     }
     return true;
@@ -257,9 +257,9 @@ class Tetromino {
       if (nx < 0) {
         if (dif) dif = Math.max(dif, 0 - nx);
         else dif = 0 - nx;
-      } else if (nx >= NUMBLOCKS_X) {
-        if (dif) dif = Math.min(dif, NUMBLOCKS_X - 1 - nx);
-        else dif = NUMBLOCKS_X - 1 - nx;
+      } else if (nx >= numblocks_x) {
+        if (dif) dif = Math.min(dif, numblocks_x - 1 - nx);
+        else dif = numblocks_x - 1 - nx;
       }
 
       this.cells[i][0] = nx;
@@ -270,7 +270,7 @@ class Tetromino {
       this.tetris.scene[ox][oy] = EMPTY;
       if (nx < 0) {
         this.tetris.scene[nx + dif][ny] = FALLING;
-      } else if (nx >= NUMBLOCKS_X) {
+      } else if (nx >= numblocks_x) {
         // console.log(nx);
         // console.log(dif);
         this.tetris.scene[nx + dif][ny] = FALLING;
@@ -327,7 +327,7 @@ function CreateSounds() {
 let soundGameOver, soundTheme, singleLine, fulltetris, triple, p_fall;
 let bg;
 let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
-let gameWidth = NUMBLOCKS_X * BLOCKSIZE;
+let gameWidth = numblocks_x * BLOCKSIZE;
 let gameHeight = NUMBLOCKS_Y * BLOCKSIZE;
 
 let y_start = { 0: 1, 1: 1, 2: 0, 3: 1, 4: 1, 5: 0, 6: 1 };
@@ -389,10 +389,14 @@ function prepareLevelToPlay() {
     try {
       levelConfig = JSON.parse(nivelTexto);
 
+      //n_block_types controla el limite superior del número aleatorio que se genera para elegir la forma de la pieza, 
+      // así que lo ajustamos al número de formas definidas en el nivel, para permitir niveles con menos o más formas segun queramos.
+      //Dichas formas han de estar predefinidas en el constructor de Tetromino.
+      n_block_types = levelConfig.NumeroTetrominos;
       fall_delay = levelConfig.timerFall;
       puntosNecesarios = levelConfig.puntosNecesarios;
-      NUMBLOCKS_X = levelConfig.bloquesAnchoJugable;
-      gameWidth = NUMBLOCKS_X * BLOCKSIZE;
+      numblocks_x = levelConfig.bloquesAnchoJugable;
+      gameWidth = numblocks_x * BLOCKSIZE;
       game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
 
       for (let id in levelConfig.coloresPiezas) {
@@ -443,7 +447,7 @@ function resetGame() {
   bg.drawRect(0, 0, gameWidth, gameHeight); // Draws the main game area background
   bg.endFill();
   bg.lineStyle(1, 0x1b1b1b, 1);
-  for (let x = 0; x < NUMBLOCKS_X; x++) {
+  for (let x = 0; x < numblocks_x; x++) {
     bg.moveTo(x * BLOCKSIZE, 0);
     bg.lineTo(x * BLOCKSIZE, gameHeight);
   }
@@ -484,22 +488,22 @@ function fall() {
 // Crea una nueva pieza en la parte superior; si colisiona al aparecer, termina la partida.
 function spawn() {
   if (nextForma === null) {
-    nextForma = Math.floor(Math.random() * N_BLOCK_TYPES);
+    nextForma = Math.floor(Math.random() * n_block_types);
   }
 
   let shape = nextForma;
   let color = color_tetromino[nextForma];
   tetromino = new Tetromino(shape, color, theTetris);
 
-  let start_x = Math.floor(NUMBLOCKS_X / 2);
+  let start_x = Math.floor(numblocks_x / 2);
   let start_y = y_start[tetromino.shape];
-  nextForma = Math.floor(Math.random() * N_BLOCK_TYPES);
+  nextForma = Math.floor(Math.random() * n_block_types);
 
   // Destroy previous preview blocks
   unrenderBlockPreview();
 
   // Position preview in the extra area (gameWidth + offset for centering)
-  let preview_x = NUMBLOCKS_X + 2;
+  let preview_x = numblocks_x + 2;
   let previweTetromino = new Tetromino(nextForma, color, theTetris);
   previweTetromino.createPreview(preview_x, 2);
   let conflict = tetromino.create(start_x, start_y);
@@ -669,7 +673,7 @@ function checkLines(candidateLines) {
   let collapsed = [];
   for (let i = 0; i < candidateLines.length; i++) {
     let y = candidateLines[i];
-    if (lineSum(y) == NUMBLOCKS_X * OCCUPIED) {
+    if (lineSum(y) == numblocks_x * OCCUPIED) {
       collapsed.push(y);
       cleanLine(y);
     }
@@ -711,13 +715,13 @@ function checkLines(candidateLines) {
 // Suma el estado de una fila para detectar si está completamente ocupada.
 function lineSum(y) {
   let s = 0;
-  for (let x = 0; x < NUMBLOCKS_X; x++) s += theTetris.scene[x][y];
+  for (let x = 0; x < numblocks_x; x++) s += theTetris.scene[x][y];
   return s;
 }
 
 // Borra una fila: destruye los Graphics de esa fila y marca las celdas como vacías.
 function cleanLine(y) {
-  for (let x = 0; x < NUMBLOCKS_X; x++) {
+  for (let x = 0; x < numblocks_x; x++) {
     if (theTetris.sceneBlocks[x][y]) {
       theTetris.sceneBlocks[x][y].destroy();
       theTetris.sceneBlocks[x][y] = null;
@@ -735,7 +739,7 @@ function collapse(linesToCollapse) {
   for (let idx = 0; idx < linesToCollapse.length; idx++) {
     let y = linesToCollapse[idx];
     for (let yy = y; yy > 0; yy--) {
-      for (let x = 0; x < NUMBLOCKS_X; x++) {
+      for (let x = 0; x < numblocks_x; x++) {
         // shift occupancy
         theTetris.scene[x][yy] = theTetris.scene[x][yy - 1];
         theTetris.sceneBlocks[x][yy] = theTetris.sceneBlocks[x][yy - 1];
@@ -744,7 +748,7 @@ function collapse(linesToCollapse) {
       }
     }
     // clear top line
-    for (let x2 = 0; x2 < NUMBLOCKS_X; x2++) {
+    for (let x2 = 0; x2 < numblocks_x; x2++) {
       theTetris.scene[x2][0] = EMPTY;
       theTetris.sceneBlocks[x2][0] = null;
     }
