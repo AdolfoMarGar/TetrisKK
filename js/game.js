@@ -524,6 +524,8 @@ function manageRanking() {
   let nuevaEntrada = {
     nombre: Player_name.textContent,
     puntos: parseInt(Player_points.textContent) || 0,
+    nivel : levelToPlay,
+    tiempo: Math.round(timer.seconds)
   };
 
   lista.push(nuevaEntrada);
@@ -541,6 +543,7 @@ function manageRanking() {
 function setGameOver(on) {
   gameOverState = on;
   if (gameOverState) {
+    //console.log(timer);
     manageRanking();
     timer.pause();
     makeShade(0.65);
@@ -785,10 +788,10 @@ window.onload = function () {
 
       // Actualizamos el texto del botón según el estado
       if (isPaused) {
-        this.innerText = "REANUDAR";
+        this.innerText = "CONTINUE";
         this.style.backgroundColor = "#0d79ed";
       } else {
-        this.innerText = "PAUSA";
+        this.innerText = "PAUSE";
         this.style.backgroundColor = "#f7eeee";
       }
     };
@@ -798,10 +801,10 @@ window.onload = function () {
       mutear();
 
       if (isMuted) {
-        this.innerText = "MÚSICA: OFF";
+        this.innerText = "MUSIC: OFF";
         this.style.backgroundColor = "#ff4444";
       } else {
-        this.innerText = "MÚSICA: ON";
+        this.innerText = "MUSIC: ON";
         this.style.backgroundColor = "#f7eeee";
       }
     };

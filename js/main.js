@@ -6,6 +6,7 @@ const ALTURA_1 = ALTO_MENU * 0.5;
 const ALTURA_2 = ALTO_MENU * 0.7;
 const IMG = 300;
 let levelToPlay = 1;
+let button;
 
 let menuState = {
   preload: function () {
@@ -160,41 +161,34 @@ let nivelesState = {
 };
 let rankingState = {
   create: function () {
-    let datosGuardados = localStorage.getItem("ranking_local");
-    let lista;
-
-    if (datosGuardados) {
-      lista = JSON.parse(datosGuardados);
-      console.log("Cargando datos desde LocalStorage");
-    } 
 
     let fondo = game.add.sprite(0, 0, "fondoR");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
 
-    if (lista && lista.length > 0) {
-      lista.forEach((entrada, index) => {
-        game.add.text(
-          100,
-          50 + 50 * index,
-          `${index + 1}. ${entrada.nombre}: ${entrada.puntos}`,
-          {
-            fill: "#000000",
-            font: "bold 24px Arial",
-            align: "center",
-          },
-        );
-      });
-    }
+    let ChooseLevel = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.35, 'Choose the level',{fill: "#000000", font: "bold 24px Arial",align: "center",},);
+    ChooseLevel.anchor.setTo(0.5);
 
-    // let estitulo = { font: "100px Arial", fill: "#671bf5", align: "center" };
-    // let titulo = game.add.text(
-    //   game.world.width * 0.5,
-    //   game.world.height * 0.15,
-    //   "RANKING",
-    //   estitulo,
-    // );
-    // titulo.anchor.setTo(0.5, 0.5);
+    let Lev1 = game.add.button(
+      game.world.width * 0.3,
+      game.world.height * 0.5,
+      "num1",
+      function() {button = 1, game.state.start("BP")},
+      this,
+    );
+    Lev1.anchor.setTo(0.5,0.35);
+    Lev1.scale.set(0.15);
+
+    let Lev2 = game.add.button(
+      game.world.width * 0.5,
+      game.world.height * 0.5,
+      "num2",
+      function() {button = 2, game.state.start("BP")},
+      this,
+    );
+    Lev2.anchor.setTo(0.5,0.35);
+    Lev2.scale.set(0.15);
+
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
       game.world.height * 0.8548387096774194,
@@ -208,6 +202,48 @@ let rankingState = {
     game.state.start("Menu");
   },
 };
+let ButtonState = {
+  create:function(){
+    let lista, contador = 0;
+    let datosGuardados = localStorage.getItem("ranking_local");
+    if (datosGuardados) {
+      lista = JSON.parse(datosGuardados);
+      console.log("Cargando datos desde LocalStorage");
+    }
+    let fondo = game.add.sprite(0, 0, "fondoR");
+    fondo.width = ANCHO_MENU;
+    fondo.height = ALTO_MENU;
+    let TextButton = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.05, 'Level '+ String(button) +" data",{fill: "#000000", font: "bold 24px Arial",align: "center",},);
+    TextButton.anchor.setTo(0.5);
+    if (lista && lista.length > 0){
+      lista.forEach((entrada)=>{
+        if(entrada.nivel == button){
+          game.add.text(
+            100,
+            100 + 50 * contador,
+            `${contador + 1}. ${entrada.nombre}: ${entrada.puntos} points in ${entrada.tiempo} seconds`,
+            {
+              fill: "#000000",
+              font: "bold 24px Arial",
+              align: "center",
+            },
+          );
+          contador ++;
+        }
+      });
+    }
+    let botonRanking = game.add.button(
+    game.world.width * 0.4,
+    game.world.height * 0.8,
+    "volver",
+    this.volverRanking,
+    this,
+    );
+  },
+  volverRanking: function(){
+    game.state.start("Ranking");
+  }
+};
 
 let game = new Phaser.Game(ANCHO_MENU, ALTO_MENU, Phaser.CANVAS, "game");
 game.state.add("Menu", menuState);
@@ -215,5 +251,6 @@ game.state.add("Game", gameState);
 game.state.add("Creditos", creditosState);
 game.state.add("Niveles", nivelesState);
 game.state.add("Ranking", rankingState);
+game.state.add("BP", ButtonState);
 
 game.state.start("Menu");
