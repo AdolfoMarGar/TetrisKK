@@ -252,8 +252,7 @@ class Tetromino {
       let nc = coordFn(i, "clockwise");
       let nx = nc[0];
       let ny = nc[1];
-      // console.log(nx);
-      // console.log(dif);
+
       if (nx < 0) {
         if (dif) dif = Math.max(dif, 0 - nx);
         else dif = 0 - nx;
@@ -598,8 +597,6 @@ function makeShade(alpha) {
 
 // Bucle de actualización para leer input y mover la pieza
 function updateGame() {
-  console.log(points);
-  console.log(puntosNecesarios);
    if (points >= puntosNecesarios) {
     setGameOver(true);
   }
