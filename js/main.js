@@ -94,9 +94,9 @@ let creditosState = {
     fondo.height = ALTO_MENU;
     let img1 = game.add.image(COLUMNA_1 - 150, ALTURA_1 + 30, "I");
     this.configurarImagen(img1);
-    let img2 = game.add.image(COLUMNA_1 + 130, ALTURA_1 + 30, "V");
+    let img2 = game.add.image(COLUMNA_1 + 180, ALTURA_1 + 30, "V");
     this.configurarImagen(img2);
-    let img3 = game.add.image(COLUMNA_1 + 400, ALTURA_1 + 30, "A");
+    let img3 = game.add.image(COLUMNA_1 + 480, ALTURA_1 + 30, "A");
     this.configurarImagen(img3);
 
     let botonVolver = game.add.button(
