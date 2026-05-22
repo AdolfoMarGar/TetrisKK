@@ -297,6 +297,78 @@ class Tetromino {
   }
 }
 
+
+class ghostTetromino { //clase del ghost tetromino
+  constructor(tetris) {
+    this.tetris = tetris;
+    this.blocks = [];
+    this.cells = [];
+    this.shape = null;
+  }
+
+  
+  renderGhostBlock() {  // dibuja el bloque ghost
+    let g = game.add.graphics(0, 0);
+    g.beginFill(0xffffff, 0.25);  // para que aparezca transparente 
+    let m = 2; // Margen ligeramente mayor para que parezca más pequeña
+    g.drawRect(m, m, BLOCKSIZE - 2 * m, BLOCKSIZE - 2 * m);
+    g.endFill();
+    return g;
+  }
+
+ 
+  destroyGraphics() { //borrar la silueta del anterior
+    for (let i = 0; i < this.blocks.length; i++) {
+      if (this.blocks[i]) {
+        this.blocks[i].destroy();
+      }
+    }
+    this.blocks = [];
+  }
+
+  updatePosition(currentTetromino) { //reposiciona la pieza ghost 
+    this.destroyGraphics();
+
+    this.shape = currentTetromino.shape;
+    this.cells = [];
+
+
+    for (let i = 0; i < currentTetromino.cells.length; i++) { //copia las coordenadas actuales de la pieza real 
+      this.cells.push([currentTetromino.cells[i][0], currentTetromino.cells[i][1]]);
+    }
+
+
+    let canDrop = true; //simula la caida de la pieza
+    while (canDrop) {
+      for (let i = 0; i < this.cells.length; i++) {
+        let nextY = this.cells[i][1] + 1;
+        // Si sale del tablero o toca una pieza ocupada...
+        if (nextY >= NUMBLOCKS_Y || this.tetris.scene[this.cells[i][0]][nextY] === OCCUPIED) {
+          canDrop = false;
+          break;
+        }
+      }
+      if (canDrop) {
+        for (let i = 0; i < this.cells.length; i++) {
+          this.cells[i][1]++;
+        }
+      }
+    }
+
+    for (let i = 0; i < this.cells.length; i++) {  // se dibuja la pieza ghost 
+      let x = this.cells[i][0];
+      let y = this.cells[i][1];
+      let b = this.renderGhostBlock();
+      b.x = x * BLOCKSIZE;
+      b.y = y * BLOCKSIZE;
+      this.blocks.push(b);
+    }
+  }
+}
+
+
+
+
 let gameState = {
   preload: loadGame,
   create: resetGame,
@@ -355,7 +427,7 @@ function unrenderBlockPreview() {
 
 // Elements for the game
 
-let tetromino, theTetris;
+let tetromino, theTetris, ghost;
 let cursors, keyRotate, keyRestart, keyMenu;
 let gameOverState = false;
 let nextForma = null;
@@ -468,7 +540,7 @@ function resetGame() {
   timer.removeAll();
   timer.resume();
   loop = timer.loop(fall_delay, fall, this);
-
+  ghost=new ghostTetromino(theTetris);
   spawn();
 }
 
@@ -508,7 +580,9 @@ function spawn() {
   let conflict = tetromino.create(start_x, start_y);
 
   if (conflict) setGameOver(true);
+  else if (ghost) ghost.updatePosition(tetromino);
 }
+
 function manageRanking() {
   let datosCargados = localStorage.getItem("ranking_local");
   let lista;
@@ -611,6 +685,7 @@ function updateGame() {
     return;
   }
 
+    let moved=false;
   if (
     cursors.left.isDown &&
     tetromino.canMove(tetromino.slide.bind(tetromino), "left")
@@ -620,6 +695,7 @@ function updateGame() {
       tetromino.slideCenter.bind(tetromino),
       "left",
     );
+    moved=true;
   } else if (
     cursors.right.isDown &&
     tetromino.canMove(tetromino.slide.bind(tetromino), "right")
@@ -629,6 +705,7 @@ function updateGame() {
       tetromino.slideCenter.bind(tetromino),
       "right",
     );
+    moved=true;
   } else if (
     cursors.down.isDown &&
     tetromino.canMove(tetromino.slide.bind(tetromino), "down")
@@ -638,10 +715,17 @@ function updateGame() {
       tetromino.slideCenter.bind(tetromino),
       "down",
     );
+    moved=true;
   } else if (keyRotate.isDown) {
     // O piece rotation is pointless, but harmless
-    if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino)))
+    if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino))){
       tetromino.moveRotate(tetromino.rotate.bind(tetromino), null, "clockwise");
+      moved=true;
+    }
+  }
+
+  if (moved && ghost) {
+    ghost.updatePosition(tetromino);
   }
 
   currentMovementTimer = 0;
@@ -679,7 +763,7 @@ function checkLines(candidateLines) {
     }
   }
   if (collapsed.length) {
-    animacionTablero(collapse.length);
+    animacionTablero(collapsed.length);
     collapse(collapsed);
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
