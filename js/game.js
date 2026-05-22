@@ -532,6 +532,7 @@ function resetGame() {
   keyRotate = game.input.keyboard.addKey(Phaser.Keyboard.UP);
   keyRestart = game.input.keyboard.addKey(Phaser.Keyboard.R);
   keyMenu = game.input.keyboard.addKey(Phaser.Keyboard.T);
+  keyHardDrop=game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
   // timer
   // IMPORTANTE: si venimos de un game over, el Timer andará pausado.
@@ -722,6 +723,9 @@ function updateGame() {
       tetromino.moveRotate(tetromino.rotate.bind(tetromino), null, "clockwise");
       moved=true;
     }
+  } else if (keyHardDrop.isDown) { 
+    caidaTotal();
+    moved = true;
   }
 
   if (moved && ghost) {
@@ -919,4 +923,19 @@ function animacionTablero(candidateLines){
     duracion=300;
   }
   game.camera.shake(intensidad,duracion);
+}
+
+function caidaTotal(){
+  if (gameOverState || isPaused) return;
+  let droppedLines=0;
+
+  while (tetromino.canMove(tetromino.slide.bind(tetromino), "down")) {
+    tetromino.move(
+      tetromino.slide.bind(tetromino),
+      tetromino.slideCenter.bind(tetromino),
+      "down"
+    );
+    droppedLines++;
+  }
+  lockTetromino();
 }
