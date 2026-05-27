@@ -199,24 +199,44 @@ let rankingState = {
     ChooseLevel.anchor.setTo(0.5);
 
     let Lev1 = game.add.button(
-      game.world.width * 0.3,
-      game.world.height * 0.5,
+      COLUMNA_1*0.75,
+      ALTURA_1,
       "num1",
       function() {button = 1, game.state.start("BP")},
       this,
     );
     Lev1.anchor.setTo(0.5);
-    Lev1.scale.set(0.15);
+    Lev1.scale.set(0.5);
 
     let Lev2 = game.add.button(
-      game.world.width * 0.5,
-      game.world.height * 0.5,
+      COLUMNA_1*1.2,
+      ALTURA_1,
       "num2",
       function() {button = 2, game.state.start("BP")},
       this,
     );
     Lev2.anchor.setTo(0.5);
-    Lev2.scale.set(0.15);
+    Lev2.scale.set(0.5);
+
+    let Lev3 = game.add.button(
+      COLUMNA_2*0.90,
+      ALTURA_1,
+      "num3",
+      this.seleccionarNivel,
+      this,
+    );
+    Lev3.scale.setTo(0.5, 0.5);
+    Lev3.anchor.setTo(0.5);
+
+    let Lev4 = game.add.button(
+      COLUMNA_2*1.15,
+      ALTURA_1,
+      "num4",
+      this.seleccionarNivel,
+      this,
+    );
+    Lev4.scale.setTo(0.5, 0.5);
+    Lev4.anchor.setTo(0.5);
 
 
     let botonVolver2 = game.add.button(
@@ -243,7 +263,7 @@ let ButtonState = {
     let fondo = game.add.sprite(0, 0, "fondoR");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
-    let TextButton = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.05, 'Level '+ String(button) +" data",{fill: "#000000", font: "bold 24px Arial",align: "center",},);
+    let TextButton = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.35, 'Level '+ String(button) +" data",{fill: "#000000", font: "bold 24px Arial",align: "center",},);
     TextButton.anchor.setTo(0.5);
     if (lista && lista.length > 0){
       lista.forEach((entrada)=>{
