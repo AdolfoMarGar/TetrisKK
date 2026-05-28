@@ -475,6 +475,7 @@ let timer, loop;
 let isPaused = false;
 let isMuted = false;
 let currentMovementTimer = 0;
+let timerLevel = 0;
 let shade, centerText;
 let points = 0,
   lines_done = 0,
@@ -482,6 +483,7 @@ let points = 0,
 const display_combo = document.getElementById("combo");
 const display_points = document.getElementById("puntos");
 const display_lines = document.getElementById("lines");
+const display_timerLevel = document.getElementById("timerLevel");
 const Player_name = document.getElementById("player");
 
 Player_name.addEventListener("click", function () {
@@ -543,10 +545,12 @@ function resetGame() {
   points = 0;
   lines_done = 0;
   combo = 0;
+  timerLevel = 0;
   prepareLevelToPlay(); //Carga el nivel a jugar, dependiendo de lo que se haya seleccionado en el menu.
   display_points.textContent = points.toString();
   display_lines.textContent = lines_done.toString();
   display_combo.textContent = combo.toString();
+  display_timerLevel.textContent = timerLevel.toString();
   nextForma = null;
   // Create Trellis and initialisation of its grid
   theTetris = new Tetris();
@@ -639,12 +643,16 @@ function manageRanking() {
     nombre: Player_name.textContent,
     puntos: parseInt(display_points.textContent) || 0,
     nivel: levelToPlay,
-    tiempo: Math.round(timer.seconds),
+    tiempo: Math.round(timerLevel), // Tiempo en segundos
   };
 
   lista.push(nuevaEntrada);
-  lista.sort((a, b) => b.puntos - a.puntos);
-
+  lista.sort((a, b) => {
+    if (b.puntos !== a.puntos) {
+      return b.puntos - a.puntos;
+    }
+    return a.tiempo - b.tiempo;
+  });
   if (lista.length > 10) {
     lista.splice(10);
   }
@@ -731,6 +739,10 @@ function updateGame() {
     currentMovementTimer = 0;
     return;
   }
+  if (!gameOverState && !isPaused) {
+    timerLevel += game.time.elapsed / 148;
+  }
+  display_timerLevel.textContent = Math.round(timerLevel);
 
   let moved = false;
   if (
