@@ -417,6 +417,10 @@ function loadGame() {
   game.load.audio("Full_Tetris", "assets/sounds/Full_Tetris.mp3");
   game.load.audio("Piece_Fall", "assets/sounds/Piece_Falling.mp3");
   game.load.audio("Triple", "assets/sounds/se_game_triple.wav");
+  game.load.image("Taipei", "assets/Taipei.png");
+  game.load.image("Madrid", "assets/Retiro.png");
+  game.load.image("Kyiv", "assets/Kyiv.png");
+  game.load.image("Atenas", "assets/Atenas.png");
   loadLevel(levelToPlay);
 }
 
@@ -429,7 +433,30 @@ function CreateSounds() {
   p_fall = game.add.audio("Piece_Fall");
 }
 
-let soundGameOver, soundTheme, singleLine, fulltetris, triple, p_fall;
+function CreateBackground(){
+  if (fondo == 0) {
+    backg = game.add.image(0,0,"Taipei");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+  }
+  else if (fondo == 1){
+    backg = game.add.image(0,0,"Madrid");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+  }
+  else if (fondo == 2){
+    backg = game.add.image(0,0,"Kyiv");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+  }
+  else {
+    backg = game.add.image(0,0,"Atenas");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+  }
+}
+
+let soundGameOver, soundTheme, singleLine, fulltetris, triple, p_fall, backg;
 let bg;
 let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = numblocks_x * BLOCKSIZE;
@@ -511,6 +538,7 @@ function prepareLevelToPlay() {
       //n_block_types controla el limite superior del número aleatorio que se genera para elegir la forma de la pieza,
       // así que lo ajustamos al número de formas definidas en el nivel, para permitir niveles con menos o más formas segun queramos.
       //Dichas formas han de estar predefinidas en el constructor de Tetromino.
+      fondo = levelConfig.fondo;
       n_block_types = levelConfig.NumeroTetrominos;
       fall_delay = levelConfig.timerFall;
       puntosNecesarios = levelConfig.puntosNecesarios;
@@ -562,11 +590,12 @@ function resetGame() {
   theTetris = new Tetris();
   theTetris.initGrid();
 
+  CreateBackground(); //Añadimos imagen del fondo
   // subtle grid background
-  bg = game.add.graphics(0, 0);
-  bg.beginFill(0x0e0e0e, 1);
-  bg.drawRect(0, 0, gameWidth, gameHeight); // Draws the main game area background
-  bg.endFill();
+  bg = game.add.graphics(0, 0); //se crea el objeto que dibuja las rejillas
+  // bg.beginFill(0x0e0e0e, 1);
+  // bg.drawRect(0, 0, gameWidth, gameHeight); // Draws the main game area background
+  // bg.endFill();
   bg.lineStyle(1, 0x1b1b1b, 1);
   for (let x = 0; x < numblocks_x; x++) {
     bg.moveTo(x * BLOCKSIZE, 0);
@@ -575,7 +604,7 @@ function resetGame() {
   for (let y = 0; y < NUMBLOCKS_Y; y++) {
     bg.moveTo(0, y * BLOCKSIZE);
     bg.lineTo(gameWidth, y * BLOCKSIZE);
-  } //Que hace este bucle?
+  } //Que hace este bucle? Dibuja las rejillas en sí mismas.
 
   // input
   cursors = game.input.keyboard.createCursorKeys();
