@@ -7,23 +7,18 @@ let fall_delay = 600; // ms
 let puntosNecesarios = 100; // ms
 const HUD = document.getElementsByClassName("HUD"); //References the HUD elements.
 const CONTROLES = document.getElementsByClassName("controles_externos");
-let levelsData = ["assets/levels/level01.json", "assets/levels/level02.json"];
+let levelsData = [
+  "assets/levels/level01.json",
+  "assets/levels/level02.json",
+  "assets/levels/level03.json",
+  "assets/levels/level04.json",
+];
 
 // 7 tetrominoes, rotation around a center cell
-const BLOCKS_PER_TETROMINO = 4;
 let n_block_types = 7;
 
 // Color de las piezas
-const COLOR_BLANCO = 0xffffff;
 const COLOR_GRIS = 0xc0c0c0;
-const COLOR_NEGRO = 0x000000;
-const COLOR_VERDE = 0x00ff00;
-const COLOR_AZUL = 0x0000ff;
-const COLOR_ROJO = 0xff0000;
-const COLOR_AMARILLO = 0xffff00;
-const COLOR_NARANJA = 0xffa500;
-const COLOR_PURPURA = 0x800080;
-const COLOR_CYAN = 0x00ffff;
 let color_tetromino = {};
 
 // Scene grid values
@@ -121,6 +116,34 @@ class Tetromino {
         [0, 0],
         [1, 0],
       ], // Z
+      7: [
+        [0, -1],
+        [0, 0],
+        [0, 1],
+        [-1, 0],
+        [1, 0],
+      ], // Plus / Cruz
+      8: [
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+      ], // U
+      9: [
+        [-1, 0],
+        [0, -1],
+        [0, 0],
+        [1, -1],
+        [1, 0],
+      ], // F
+      10: [
+        [-1, -1],
+        [-1, 0],
+        [0, 0],
+        [0, 1],
+        [1, 1],
+      ], // W
     };
   }
 
@@ -140,7 +163,8 @@ class Tetromino {
     this.center = [c_x, c_y];
 
     let conflict = false;
-    for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
+    let blockCount = this.offsets[this.shape].length;
+    for (let i = 0; i < blockCount; i++) {
       let x = c_x + this.offsets[this.shape][i][0];
       let y = c_y + this.offsets[this.shape][i][1];
       let color = this.color;
@@ -161,7 +185,8 @@ class Tetromino {
   }
   createPreview(c_x, c_y) {
     this.center = [c_x, c_y];
-    for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
+    let blockCount = this.offsets[this.shape].length;
+    for (let i = 0; i < blockCount; i++) {
       let x_preview = c_x + this.offsets[this.shape][i][0];
       let y_preview = c_y + this.offsets[this.shape][i][1];
       let color = color_tetromino[this.shape];
@@ -404,7 +429,19 @@ let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = numblocks_x * BLOCKSIZE;
 let gameHeight = NUMBLOCKS_Y * BLOCKSIZE;
 
-let y_start = { 0: 1, 1: 1, 2: 0, 3: 1, 4: 1, 5: 0, 6: 1 };
+let y_start = {
+  0: 1,
+  1: 1,
+  2: 0,
+  3: 1,
+  4: 1,
+  5: 0,
+  6: 1,
+  7: 1,
+  8: 1,
+  9: 1,
+  10: 1,
+};
 
 let move_offsets = {
   left: [-1, 0],

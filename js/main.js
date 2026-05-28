@@ -176,7 +176,7 @@ let nivelesState = {
       this.seleccionarNivel,
       this,
     );
-    botonNiv4.numNivel = 3;
+    botonNiv4.numNivel = 4;
     botonNiv4.scale.setTo(0.5, 0.5);
     botonNiv4.anchor.setTo(0.5);
 
