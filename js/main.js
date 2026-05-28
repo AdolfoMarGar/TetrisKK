@@ -200,6 +200,7 @@ let nivelesState = {
     game.state.start("Menu");
   },
 };
+
 let rankingState = {
   create: function () {
 
@@ -234,7 +235,7 @@ let rankingState = {
       COLUMNA_2*0.90,
       ALTURA_1,
       "num3",
-      this.seleccionarNivel,
+      function() {button = 3, game.state.start("BP")},
       this,
     );
     Lev3.scale.setTo(0.5, 0.5);
@@ -244,7 +245,7 @@ let rankingState = {
       COLUMNA_2*1.15,
       ALTURA_1,
       "num4",
-      this.seleccionarNivel,
+      function() {button = 4, game.state.start("BP")},
       this,
     );
     Lev4.scale.setTo(0.5, 0.5);
@@ -265,6 +266,7 @@ let rankingState = {
     game.state.start("Menu");
   },
 };
+
 let ButtonState = {
   create:function(){
     SoundOK();

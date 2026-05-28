@@ -625,7 +625,7 @@ function spawn() {
 }
 
 function manageRanking() {
-  let datosCargados = localStorage.getItem("ranking_local");
+  let datosCargados = localStorage.getItem(`ranking_nivel_${levelToPlay}`);
   let lista;
   if (datosCargados !== null) {
     lista = JSON.parse(datosCargados);
@@ -648,9 +648,8 @@ function manageRanking() {
   if (lista.length > 10) {
     lista.splice(10);
   }
-
-  localStorage.setItem("ranking_local", JSON.stringify(lista));
-  console.log("Guardado en ranking_local");
+  localStorage.setItem(`ranking_nivel_${levelToPlay}`, JSON.stringify(lista));
+  console.log(`Guardado en ranking_nivel_${levelToPlay}`);
 }
 
 // Activa el estado de fin de partida y muestra un mensaje de reinicio.
