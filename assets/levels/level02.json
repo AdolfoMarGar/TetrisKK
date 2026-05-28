@@ -2,6 +2,7 @@
   "puntosNecesarios": 170,
   "timerFall": 530,
   "bloquesAnchoJugable": 12,
+  "fondo": 1,
   "coloresPiezas": {
     "0": "0x0000ff",
     "1": "0xff0000",

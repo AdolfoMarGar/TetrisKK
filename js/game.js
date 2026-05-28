@@ -15,6 +15,9 @@ let levelsData = [
 ];
 const btnPausa = document.getElementById("btn_pausa");
 const btnMute = document.getElementById("btn-mute-html");
+const display_timerLimit = document.getElementById("timerLimit");
+const display_pointsGoal = document.getElementById("puntosGoal");
+
 let yaRotate = false;
 let yaDrop = false;
 let yaPausado = false;
@@ -417,6 +420,10 @@ function loadGame() {
   game.load.audio("Full_Tetris", "assets/sounds/Full_Tetris.mp3");
   game.load.audio("Piece_Fall", "assets/sounds/Piece_Falling.mp3");
   game.load.audio("Triple", "assets/sounds/se_game_triple.wav");
+  game.load.image("Taipei", "assets/Taipei.png");
+  game.load.image("Madrid", "assets/Retiro.png");
+  game.load.image("Kyiv", "assets/Kyiv.png");
+  game.load.image("Atenas", "assets/Atenas.png");
   loadLevel(levelToPlay);
 }
 
@@ -429,7 +436,34 @@ function CreateSounds() {
   p_fall = game.add.audio("Piece_Fall");
 }
 
-let soundGameOver, soundTheme, singleLine, fulltetris, triple, p_fall;
+function CreateBackground(){
+  if (fondo == 0) {
+    backg = game.add.image(0,0,"Taipei");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+    backg.tint = 0x777777;
+  }
+  else if (fondo == 1){
+    backg = game.add.image(0,0,"Madrid");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+    backg.tint = 0x777777;
+  }
+  else if (fondo == 2){
+    backg = game.add.image(0,0,"Kyiv");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+    backg.tint = 0x777777;
+  }
+  else {
+    backg = game.add.image(0,0,"Atenas");
+    backg.width = gameWidth;
+    backg.height = gameHeight;
+    backg.tint = 0x777777;
+  }
+}
+
+let soundGameOver, soundTheme, singleLine, fulltetris, triple, p_fall, backg;
 let bg;
 let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = numblocks_x * BLOCKSIZE;
@@ -511,11 +545,19 @@ function prepareLevelToPlay() {
       //n_block_types controla el limite superior del número aleatorio que se genera para elegir la forma de la pieza,
       // así que lo ajustamos al número de formas definidas en el nivel, para permitir niveles con menos o más formas segun queramos.
       //Dichas formas han de estar predefinidas en el constructor de Tetromino.
+      fondo = levelConfig.fondo;
       n_block_types = levelConfig.NumeroTetrominos;
       fall_delay = levelConfig.timerFall;
       puntosNecesarios = levelConfig.puntosNecesarios;
       numblocks_x = levelConfig.bloquesAnchoJugable;
       gameWidth = numblocks_x * BLOCKSIZE;
+      if (levelToPlay == 3) {
+        timerLimit = levelConfig.tiempoLimite;
+        display_timerLimit.style.display = "inline";
+      } else {
+        display_timerLimit.style.display = "none";
+      }
+      display_pointsGoal.textContent = puntosNecesarios.toString();
       game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
 
       for (let id in levelConfig.coloresPiezas) {
@@ -562,11 +604,12 @@ function resetGame() {
   theTetris = new Tetris();
   theTetris.initGrid();
 
+  CreateBackground(); //Añadimos imagen del fondo
   // subtle grid background
-  bg = game.add.graphics(0, 0);
-  bg.beginFill(0x0e0e0e, 1);
-  bg.drawRect(0, 0, gameWidth, gameHeight); // Draws the main game area background
-  bg.endFill();
+  bg = game.add.graphics(0, 0); //se crea el objeto que dibuja las rejillas
+  // bg.beginFill(0x0e0e0e, 1);
+  // bg.drawRect(0, 0, gameWidth, gameHeight); // Draws the main game area background
+  // bg.endFill();
   bg.lineStyle(1, 0x1b1b1b, 1);
   for (let x = 0; x < numblocks_x; x++) {
     bg.moveTo(x * BLOCKSIZE, 0);
@@ -575,7 +618,7 @@ function resetGame() {
   for (let y = 0; y < NUMBLOCKS_Y; y++) {
     bg.moveTo(0, y * BLOCKSIZE);
     bg.lineTo(gameWidth, y * BLOCKSIZE);
-  } //Que hace este bucle?
+  } //Que hace este bucle? Dibuja las rejillas en sí mismas.
 
   // input
   cursors = game.input.keyboard.createCursorKeys();
@@ -695,6 +738,25 @@ function setGameOver(on) {
           align: "center",
         },
       );
+    } else if (levelToPlay == 3 && timerLevel >= timerLimit) {
+      display_points.textContent = points.toString();
+      soundGameOver.play();
+      soundGameOver.volume = 0.4;
+      centerText = game.add.text(
+        game.world.centerX,
+        game.world.centerY,
+        "GAME OVER BECAUSE TIME IS UP\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " +
+          points.toString() +
+          "\nLines Destroyed: " +
+          lines_done.toString() +
+          "\nPlayer: " +
+          Player_name.textContent,
+        {
+          font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
+          fill: "#ffffff",
+          align: "center",
+        },
+      );
     } else {
       display_points.textContent = points.toString();
       soundGameOver.play();
@@ -735,6 +797,9 @@ function makeShade(alpha) {
 function updateGame() {
   if (points >= puntosNecesarios) {
     PartidaGanada();
+  }
+  if (levelToPlay == 3 && timerLevel >= timerLimit) {
+    setGameOver(true);
   }
   btnPausa.style.backgroundColor = isPaused ? "#0d79ed" : "#ffffff";
   btnPausa.innerText = isPaused ? "CONTINUE" : "PAUSE";

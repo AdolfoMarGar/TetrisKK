@@ -2,6 +2,7 @@
   "puntosNecesarios": 250,
   "timerFall": 400,
   "bloquesAnchoJugable": 15,
+  "fondo": 2,
   "coloresPiezas": {
     "0": "0x0000ff",
     "1": "0xff0000",
@@ -13,5 +14,6 @@
     "7": "0xff69b4",
     "8": "0x8b4513"
   },
-  "NumeroTetrominos": 9
+  "NumeroTetrominos": 9,
+  "tiempoLimite": 240
 }

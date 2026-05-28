@@ -7,17 +7,27 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <div id="controles">Enter: Drop Tetromino | Left/Right Keys: Move sides | Down Key: Soft Drop | Up Key: Rotate | Space: Pause | M: Mute</div>
+    <div id="controles">
+      Enter: Drop Tetromino | Left/Right Keys: Move sides | Down Key: Soft Drop
+      | Up Key: Rotate | Space: Pause | M: Mute
+    </div>
+
     <div id="wrap">
       <div>
+        <div class="lvl">Level selected = <span id="lvlSelected">1</span></div>
         <div id="game"></div>
+
         <div class="HUD">
-          Points = <span id="puntos">0</span> Lines eliminated =
+          Points = <span id="puntos">0</span> Goal points =
+          <span id="puntosGoal">0</span>
+        </div>
+        <div class="HUD">
+          Current combo = <span id="combo">0</span> Lines eliminated =
           <span id="lines">0</span>
         </div>
-        <div class="controles_externos">
-          <button id="btn_pausa" class="boton-ui">PAUSE</button>
-          <button id="btn-mute-html" class="boton-ui">MUSIC: ON</button>
+        <div class="HUD">
+          Current time = <span id="timerLevel">0</span
+          ><span id="timerLimit"> Limit time: 240</span>
         </div>
         <div class="Nombre">
           Name =
@@ -25,9 +35,10 @@
             >User</span
           >
         </div>
-        <div class="lvl">Level selected = <span id="lvlSelected">1</span></div>
-        <div class="HUD">Current combo = <span id="combo">0</span></div>
-        <div class="HUD">Current time = <span id="timerLevel">0</span></div>
+        <div class="controles_externos">
+          <button id="btn_pausa" class="boton-ui">PAUSE</button>
+          <button id="btn-mute-html" class="boton-ui">MUSIC: ON</button>
+        </div>
       </div>
     </div>
     <script src="js/lib/phaser.js"></script>

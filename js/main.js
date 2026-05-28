@@ -295,9 +295,9 @@ let ButtonState = {
     if (lista.length > 0) {
       lista.forEach((entrada, index) => {
         game.add.text(
-          ANCHO_MENU * 0.3,
-          ALTO_MENU * 0.4 + 40 * index,
-          `${index + 1}. ${entrada.nombre}: ${entrada.puntos} pts en ${entrada.tiempo}s`,
+          ANCHO_MENU * 0.05,
+          ALTO_MENU * 0.1 + 40 * index,
+          `${index + 1}. ${entrada.nombre}: ${entrada.puntos} pts in ${entrada.tiempo} seconds`,
           { fill: "#000000", font: "20px Arial" },
         );
       });
@@ -305,7 +305,7 @@ let ButtonState = {
       let noData = game.add.text(
         ANCHO_MENU * 0.5,
         ALTO_MENU * 0.5,
-        "No hay datos para este nivel",
+        "No data for this level",
         { fill: "#000000", font: "bold 20px Arial", align: "center" },
       );
       noData.anchor.setTo(0.5);
