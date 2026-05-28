@@ -438,21 +438,25 @@ function CreateBackground(){
     backg = game.add.image(0,0,"Taipei");
     backg.width = gameWidth;
     backg.height = gameHeight;
+    backg.tint = 0x777777;
   }
   else if (fondo == 1){
     backg = game.add.image(0,0,"Madrid");
     backg.width = gameWidth;
     backg.height = gameHeight;
+    backg.tint = 0x777777;
   }
   else if (fondo == 2){
     backg = game.add.image(0,0,"Kyiv");
     backg.width = gameWidth;
     backg.height = gameHeight;
+    backg.tint = 0x777777;
   }
   else {
     backg = game.add.image(0,0,"Atenas");
     backg.width = gameWidth;
     backg.height = gameHeight;
+    backg.tint = 0x777777;
   }
 }
 
