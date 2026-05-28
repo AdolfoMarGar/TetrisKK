@@ -2,28 +2,29 @@
 const BLOCKSIZE = 28; // px
 let numblocks_x = 10; // classic width
 const NUMBLOCKS_Y = 20; // classic height
-const MOVEMENT_LAG = 85; // ms (soft key repeat)
+const MOVEMENT_LAG = 140; // ms (soft key repeat)
 let fall_delay = 600; // ms
 let puntosNecesarios = 100; // ms
 const HUD = document.getElementsByClassName("HUD"); //References the HUD elements.
 const CONTROLES = document.getElementsByClassName("controles_externos");
-let levelsData = ["assets/levels/level01.json", "assets/levels/level02.json"];
+let levelsData = [
+  "assets/levels/level01.json",
+  "assets/levels/level02.json",
+  "assets/levels/level03.json",
+  "assets/levels/level04.json",
+];
+const btnPausa = document.getElementById("btn_pausa");
+const btnMute = document.getElementById("btn-mute-html");
+let yaRotate = false;
+let yaDrop = false;
+let yaPausado = false;
+let yaMuted = false;
 
 // 7 tetrominoes, rotation around a center cell
-const BLOCKS_PER_TETROMINO = 4;
 let n_block_types = 7;
 
 // Color de las piezas
-const COLOR_BLANCO = 0xffffff;
 const COLOR_GRIS = 0xc0c0c0;
-const COLOR_NEGRO = 0x000000;
-const COLOR_VERDE = 0x00ff00;
-const COLOR_AZUL = 0x0000ff;
-const COLOR_ROJO = 0xff0000;
-const COLOR_AMARILLO = 0xffff00;
-const COLOR_NARANJA = 0xffa500;
-const COLOR_PURPURA = 0x800080;
-const COLOR_CYAN = 0x00ffff;
 let color_tetromino = {};
 
 // Scene grid values
@@ -121,6 +122,34 @@ class Tetromino {
         [0, 0],
         [1, 0],
       ], // Z
+      7: [
+        [0, -1],
+        [0, 0],
+        [0, 1],
+        [-1, 0],
+        [1, 0],
+      ], // Plus / Cruz
+      8: [
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+      ], // U
+      9: [
+        [-1, 0],
+        [0, -1],
+        [0, 0],
+        [1, -1],
+        [1, 0],
+      ], // F
+      10: [
+        [-1, -1],
+        [-1, 0],
+        [0, 0],
+        [0, 1],
+        [1, 1],
+      ], // W
     };
   }
 
@@ -140,7 +169,8 @@ class Tetromino {
     this.center = [c_x, c_y];
 
     let conflict = false;
-    for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
+    let blockCount = this.offsets[this.shape].length;
+    for (let i = 0; i < blockCount; i++) {
       let x = c_x + this.offsets[this.shape][i][0];
       let y = c_y + this.offsets[this.shape][i][1];
       let color = this.color;
@@ -161,7 +191,8 @@ class Tetromino {
   }
   createPreview(c_x, c_y) {
     this.center = [c_x, c_y];
-    for (let i = 0; i < BLOCKS_PER_TETROMINO; i++) {
+    let blockCount = this.offsets[this.shape].length;
+    for (let i = 0; i < blockCount; i++) {
       let x_preview = c_x + this.offsets[this.shape][i][0];
       let y_preview = c_y + this.offsets[this.shape][i][1];
       let color = color_tetromino[this.shape];
@@ -404,7 +435,19 @@ let gameWidthExtra = BLOCKSIZE * 5; //Dibujar aquí elementos extra
 let gameWidth = numblocks_x * BLOCKSIZE;
 let gameHeight = NUMBLOCKS_Y * BLOCKSIZE;
 
-let y_start = { 0: 1, 1: 1, 2: 0, 3: 1, 4: 1, 5: 0, 6: 1 };
+let y_start = {
+  0: 1,
+  1: 1,
+  2: 0,
+  3: 1,
+  4: 1,
+  5: 0,
+  6: 1,
+  7: 1,
+  8: 1,
+  9: 1,
+  10: 1,
+};
 
 let move_offsets = {
   left: [-1, 0],
@@ -431,13 +474,14 @@ function unrenderBlockPreview() {
 // Elements for the game
 
 let tetromino, theTetris, ghost;
-let cursors, keyRotate, keyRestart, keyMenu;
+let cursors, keyRotate, keyRestart, keyMenu, keyHardDrop, keyPause, keyMute;
 let gameOverState = false;
 let nextForma = null;
 let timer, loop;
 let isPaused = false;
 let isMuted = false;
 let currentMovementTimer = 0;
+let timerLevel = 0;
 let shade, centerText;
 let points = 0,
   lines_done = 0,
@@ -445,6 +489,7 @@ let points = 0,
 const display_combo = document.getElementById("combo");
 const display_points = document.getElementById("puntos");
 const display_lines = document.getElementById("lines");
+const display_timerLevel = document.getElementById("timerLevel");
 const Player_name = document.getElementById("player");
 
 Player_name.addEventListener("click", function () {
@@ -506,10 +551,12 @@ function resetGame() {
   points = 0;
   lines_done = 0;
   combo = 0;
+  timerLevel = 0;
   prepareLevelToPlay(); //Carga el nivel a jugar, dependiendo de lo que se haya seleccionado en el menu.
   display_points.textContent = points.toString();
   display_lines.textContent = lines_done.toString();
   display_combo.textContent = combo.toString();
+  display_timerLevel.textContent = timerLevel.toString();
   nextForma = null;
   // Create Trellis and initialisation of its grid
   theTetris = new Tetris();
@@ -536,7 +583,8 @@ function resetGame() {
   keyRestart = game.input.keyboard.addKey(Phaser.Keyboard.R);
   keyMenu = game.input.keyboard.addKey(Phaser.Keyboard.T);
   keyHardDrop = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-
+  keyPause = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  keyMute = game.input.keyboard.addKey(Phaser.Keyboard.M);
   // timer
   // IMPORTANTE: si venimos de un game over, el Timer andará pausado.
   // Hay que reanudarlo explícitamente, o la caída se queda a 0 (no cae nunca).
@@ -588,7 +636,7 @@ function spawn() {
 }
 
 function manageRanking() {
-  let datosCargados = localStorage.getItem("ranking_local");
+  let datosCargados = localStorage.getItem(`ranking_nivel_${levelToPlay}`);
   let lista;
   if (datosCargados !== null) {
     lista = JSON.parse(datosCargados);
@@ -602,18 +650,21 @@ function manageRanking() {
     nombre: Player_name.textContent,
     puntos: parseInt(display_points.textContent) || 0,
     nivel: levelToPlay,
-    tiempo: Math.round(timer.seconds),
+    tiempo: Math.round(timerLevel), // Tiempo en segundos
   };
 
   lista.push(nuevaEntrada);
-  lista.sort((a, b) => b.puntos - a.puntos);
-
+  lista.sort((a, b) => {
+    if (b.puntos !== a.puntos) {
+      return b.puntos - a.puntos;
+    }
+    return a.tiempo - b.tiempo;
+  });
   if (lista.length > 10) {
     lista.splice(10);
   }
-
-  localStorage.setItem("ranking_local", JSON.stringify(lista));
-  console.log("Guardado en ranking_local");
+  localStorage.setItem(`ranking_nivel_${levelToPlay}`, JSON.stringify(lista));
+  console.log(`Guardado en ranking_nivel_${levelToPlay}`);
 }
 
 // Activa el estado de fin de partida y muestra un mensaje de reinicio.
@@ -685,64 +736,111 @@ function updateGame() {
   if (points >= puntosNecesarios) {
     PartidaGanada();
   }
+  btnPausa.style.backgroundColor = isPaused ? "#0d79ed" : "#ffffff";
+  btnPausa.innerText = isPaused ? "CONTINUE" : "PAUSE";
+
+  btnMute.style.backgroundColor = isMuted ? "#ff4444" : "#ffffff";
+  btnMute.innerText = isMuted ? "MUTE: ON" : "MUTE: OFF";
+
+  if (keyPause.isDown) {
+    if (!yaPausado) {
+      pausar();
+      yaPausado = true;
+    }
+  } else {
+    yaPausado = false;
+  }
+  if (keyMute.isDown) {
+    if (!yaMuted) {
+      mutear();
+      yaMuted = true;
+    }
+  } else {
+    yaMuted = false;
+  }
+
   if (isPaused) return;
+  else;
   currentMovementTimer += this.time.elapsed;
-  if (currentMovementTimer <= MOVEMENT_LAG) return;
 
   if (gameOverState) {
     if (keyRestart.isDown) resetGame();
     if (keyMenu.isDown) returnMenu();
-    currentMovementTimer = 0;
     return;
   }
 
+  timerLevel += game.time.elapsed / 1000;
+  display_timerLevel.textContent = Math.round(timerLevel);
   let moved = false;
-  if (
-    cursors.left.isDown &&
-    tetromino.canMove(tetromino.slide.bind(tetromino), "left")
-  ) {
-    tetromino.move(
-      tetromino.slide.bind(tetromino),
-      tetromino.slideCenter.bind(tetromino),
-      "left",
-    );
-    moved = true;
-  } else if (
-    cursors.right.isDown &&
-    tetromino.canMove(tetromino.slide.bind(tetromino), "right")
-  ) {
-    tetromino.move(
-      tetromino.slide.bind(tetromino),
-      tetromino.slideCenter.bind(tetromino),
-      "right",
-    );
-    moved = true;
-  } else if (
-    cursors.down.isDown &&
-    tetromino.canMove(tetromino.slide.bind(tetromino), "down")
-  ) {
-    tetromino.move(
-      tetromino.slide.bind(tetromino),
-      tetromino.slideCenter.bind(tetromino),
-      "down",
-    );
-    moved = true;
-  } else if (keyRotate.isDown) {
-    // O piece rotation is pointless, but harmless
-    if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino))) {
-      tetromino.moveRotate(tetromino.rotate.bind(tetromino), null, "clockwise");
-      moved = true;
+
+  if (keyRotate.isDown) {
+    if (!yaRotate) {
+      if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino))) {
+        tetromino.moveRotate(
+          tetromino.rotate.bind(tetromino),
+          null,
+          "clockwise",
+        );
+        moved = true;
+      }
+      yaRotate = true;
     }
-  } else if (keyHardDrop.isDown) {
-    caidaTotal();
-    moved = true;
+  } else {
+    yaRotate = false;
+  }
+
+  if (keyHardDrop.isDown) {
+    if (!yaDrop) {
+      caidaTotal();
+      moved = true;
+      yaDrop = true;
+    }
+  } else {
+    yaDrop = false;
+  }
+
+  currentMovementTimer += game.time.elapsed;
+
+  if (currentMovementTimer > MOVEMENT_LAG) {
+    if (
+      cursors.left.isDown &&
+      tetromino.canMove(tetromino.slide.bind(tetromino), "left")
+    ) {
+      tetromino.move(
+        tetromino.slide.bind(tetromino),
+        tetromino.slideCenter.bind(tetromino),
+        "left",
+      );
+      moved = true;
+      currentMovementTimer = 0;
+    } else if (
+      cursors.right.isDown &&
+      tetromino.canMove(tetromino.slide.bind(tetromino), "right")
+    ) {
+      tetromino.move(
+        tetromino.slide.bind(tetromino),
+        tetromino.slideCenter.bind(tetromino),
+        "right",
+      );
+      moved = true;
+      currentMovementTimer = 0;
+    } else if (
+      cursors.down.isDown &&
+      tetromino.canMove(tetromino.slide.bind(tetromino), "down")
+    ) {
+      tetromino.move(
+        tetromino.slide.bind(tetromino),
+        tetromino.slideCenter.bind(tetromino),
+        "down",
+      );
+      moved = true;
+      currentMovementTimer = 0;
+    }
   }
 
   if (moved && ghost) {
     ghost.updatePosition(tetromino);
   }
-
-  currentMovementTimer = 0;
 }
 
 // Fija la pieza actual en el tablero, comprueba líneas completas y genera la siguiente.
@@ -875,8 +973,6 @@ function mutear() {
 }
 
 window.onload = function () {
-  const btnPausa = document.getElementById("btn_pausa");
-  const btnMute = document.getElementById("btn-mute-html");
   if (btnPausa) {
     btnPausa.onclick = function () {
       pausar(); // Esta es la función que  detiene el timer y el update

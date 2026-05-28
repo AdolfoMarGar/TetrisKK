@@ -32,3 +32,12 @@ body {
     flex-direction: column;
     gap: 15px;
 }
+#controles {
+    top: 10px;
+    left: 50%;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
