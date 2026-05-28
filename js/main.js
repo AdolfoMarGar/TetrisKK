@@ -28,6 +28,9 @@ let menuState = {
     game.load.image("num1", "assets/num1.png");
     game.load.image("num2", "assets/num2.png");
     game.load.audio("OK", "assets/sounds/se_sys_ok.wav");
+    game.load.image("num3", "assets/num3.png");
+    game.load.image("num4", "assets/num4.png");
+
     // this.load.json("datos_ranking", "assets/ranking.json");
   },
   create: function () {
@@ -103,9 +106,9 @@ let creditosState = {
     fondo.height = ALTO_MENU;
     let img1 = game.add.image(COLUMNA_1 - 150, ALTURA_1 + 30, "I");
     this.configurarImagen(img1);
-    let img2 = game.add.image(COLUMNA_1 + 130, ALTURA_1 + 30, "V");
+    let img2 = game.add.image(COLUMNA_1 + 180, ALTURA_1 + 30, "V");
     this.configurarImagen(img2);
-    let img3 = game.add.image(COLUMNA_1 + 400, ALTURA_1 + 30, "A");
+    let img3 = game.add.image(COLUMNA_1 + 480, ALTURA_1 + 30, "A");
     this.configurarImagen(img3);
 
     let botonVolver = game.add.button(
@@ -133,25 +136,51 @@ let nivelesState = {
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
     let botonNiv1 = game.add.button(
-      COLUMNA_1,
+      COLUMNA_1*0.75,
       ALTURA_1,
       "num1",
       this.seleccionarNivel,
       this,
     );
     botonNiv1.numNivel = 1;
-    botonNiv1.scale.setTo(0.1, 0.1);
-    botonNiv1.anchor.setTo(0.5, 0.5);
+    botonNiv1.scale.setTo(0.5, 0.5); 
+    botonNiv1.anchor.setTo(0.5);
+
+
     let botonNiv2 = game.add.button(
-      COLUMNA_2,
+      COLUMNA_1*1.2,
       ALTURA_1,
       "num2",
       this.seleccionarNivel,
       this,
     );
     botonNiv2.numNivel = 2;
-    botonNiv2.scale.setTo(0.1, 0.1);
-    botonNiv2.anchor.setTo(0.5, 0.5);
+    botonNiv2.scale.setTo(0.5, 0.5);
+    botonNiv2.anchor.setTo(0.5);
+
+    let botonNiv3 = game.add.button(
+      COLUMNA_2*0.90,
+      ALTURA_1,
+      "num3",
+      this.seleccionarNivel,
+      this,
+    );
+    botonNiv3.numNivel = 3;
+    botonNiv3.scale.setTo(0.5, 0.5);
+    botonNiv3.anchor.setTo(0.5);
+
+    let botonNiv4 = game.add.button(
+      COLUMNA_2*1.15,
+      ALTURA_1,
+      "num4",
+      this.seleccionarNivel,
+      this,
+    );
+    botonNiv4.numNivel = 3;
+    botonNiv4.scale.setTo(0.5, 0.5);
+    botonNiv4.anchor.setTo(0.5);
+
+
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
       game.world.height * 0.9,
@@ -182,24 +211,45 @@ let rankingState = {
     ChooseLevel.anchor.setTo(0.5);
 
     let Lev1 = game.add.button(
-      game.world.width * 0.3,
-      game.world.height * 0.5,
+      COLUMNA_1*0.75,
+      ALTURA_1,
       "num1",
       function() {button = 1, game.state.start("BP")},
       this,
     );
-    Lev1.anchor.setTo(0.5,0.35);
-    Lev1.scale.set(0.15);
+    Lev1.anchor.setTo(0.5);
+    Lev1.scale.set(0.5);
 
     let Lev2 = game.add.button(
-      game.world.width * 0.5,
-      game.world.height * 0.5,
+      COLUMNA_1*1.2,
+      ALTURA_1,
       "num2",
       function() {button = 2, game.state.start("BP")},
       this,
     );
-    Lev2.anchor.setTo(0.5,0.35);
-    Lev2.scale.set(0.15);
+    Lev2.anchor.setTo(0.5);
+    Lev2.scale.set(0.5);
+
+    let Lev3 = game.add.button(
+      COLUMNA_2*0.90,
+      ALTURA_1,
+      "num3",
+      this.seleccionarNivel,
+      this,
+    );
+    Lev3.scale.setTo(0.5, 0.5);
+    Lev3.anchor.setTo(0.5);
+
+    let Lev4 = game.add.button(
+      COLUMNA_2*1.15,
+      ALTURA_1,
+      "num4",
+      this.seleccionarNivel,
+      this,
+    );
+    Lev4.scale.setTo(0.5, 0.5);
+    Lev4.anchor.setTo(0.5);
+
 
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
@@ -227,7 +277,7 @@ let ButtonState = {
     let fondo = game.add.sprite(0, 0, "fondoR");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
-    let TextButton = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.05, 'Level '+ String(button) +" data",{fill: "#000000", font: "bold 24px Arial",align: "center",},);
+    let TextButton = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.35, 'Level '+ String(button) +" data",{fill: "#000000", font: "bold 24px Arial",align: "center",},);
     TextButton.anchor.setTo(0.5);
     if (lista && lista.length > 0){
       lista.forEach((entrada)=>{
