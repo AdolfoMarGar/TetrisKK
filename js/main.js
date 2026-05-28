@@ -7,10 +7,10 @@ const ALTURA_2 = ALTO_MENU * 0.7;
 const IMG = 300;
 let levelToPlay = 1;
 let button;
-function SoundOK(){
-    let SoundOK = game.add.sound("OK");
-    SoundOK.volume = 0.2;
-    SoundOK.play();
+function SoundOK() {
+  let SoundOK = game.add.sound("OK");
+  SoundOK.volume = 0.2;
+  SoundOK.play();
 }
 
 let menuState = {
@@ -136,19 +136,18 @@ let nivelesState = {
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
     let botonNiv1 = game.add.button(
-      COLUMNA_1*0.75,
+      COLUMNA_1 * 0.75,
       ALTURA_1,
       "num1",
       this.seleccionarNivel,
       this,
     );
     botonNiv1.numNivel = 1;
-    botonNiv1.scale.setTo(0.5, 0.5); 
+    botonNiv1.scale.setTo(0.5, 0.5);
     botonNiv1.anchor.setTo(0.5);
 
-
     let botonNiv2 = game.add.button(
-      COLUMNA_1*1.2,
+      COLUMNA_1 * 1.2,
       ALTURA_1,
       "num2",
       this.seleccionarNivel,
@@ -159,7 +158,7 @@ let nivelesState = {
     botonNiv2.anchor.setTo(0.5);
 
     let botonNiv3 = game.add.button(
-      COLUMNA_2*0.90,
+      COLUMNA_2 * 0.9,
       ALTURA_1,
       "num3",
       this.seleccionarNivel,
@@ -170,7 +169,7 @@ let nivelesState = {
     botonNiv3.anchor.setTo(0.5);
 
     let botonNiv4 = game.add.button(
-      COLUMNA_2*1.15,
+      COLUMNA_2 * 1.15,
       ALTURA_1,
       "num4",
       this.seleccionarNivel,
@@ -179,7 +178,6 @@ let nivelesState = {
     botonNiv4.numNivel = 4;
     botonNiv4.scale.setTo(0.5, 0.5);
     botonNiv4.anchor.setTo(0.5);
-
 
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
@@ -203,54 +201,60 @@ let nivelesState = {
 
 let rankingState = {
   create: function () {
-
     let fondo = game.add.sprite(0, 0, "fondoR");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
 
-    let ChooseLevel = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.35, 'Choose the level',{fill: "#000000", font: "bold 24px Arial",align: "center",},);
-    ChooseLevel.anchor.setTo(0.5);
+    // let ChooseLevel = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.35, 'Choose the level',{fill: "#000000", font: "bold 24px Arial",align: "center",},);
+    // ChooseLevel.anchor.setTo(0.5);
 
     let Lev1 = game.add.button(
-      COLUMNA_1*0.75,
+      COLUMNA_1 * 0.75,
       ALTURA_1,
       "num1",
-      function() {button = 1, game.state.start("BP")},
+      function () {
+        ((button = 1), game.state.start("BP"));
+      },
       this,
     );
     Lev1.anchor.setTo(0.5);
     Lev1.scale.set(0.5);
 
     let Lev2 = game.add.button(
-      COLUMNA_1*1.2,
+      COLUMNA_1 * 1.2,
       ALTURA_1,
       "num2",
-      function() {button = 2, game.state.start("BP")},
+      function () {
+        ((button = 2), game.state.start("BP"));
+      },
       this,
     );
     Lev2.anchor.setTo(0.5);
     Lev2.scale.set(0.5);
 
     let Lev3 = game.add.button(
-      COLUMNA_2*0.90,
+      COLUMNA_2 * 0.9,
       ALTURA_1,
       "num3",
-      function() {button = 3, game.state.start("BP")},
+      function () {
+        ((button = 3), game.state.start("BP"));
+      },
       this,
     );
     Lev3.scale.setTo(0.5, 0.5);
     Lev3.anchor.setTo(0.5);
 
     let Lev4 = game.add.button(
-      COLUMNA_2*1.15,
+      COLUMNA_2 * 1.15,
       ALTURA_1,
       "num4",
-      function() {button = 4, game.state.start("BP")},
+      function () {
+        ((button = 4), game.state.start("BP"));
+      },
       this,
     );
     Lev4.scale.setTo(0.5, 0.5);
     Lev4.anchor.setTo(0.5);
-
 
     let botonVolver2 = game.add.button(
       game.world.width * 0.5,
@@ -266,50 +270,60 @@ let rankingState = {
     game.state.start("Menu");
   },
 };
-
 let ButtonState = {
-  create:function(){
+  create: function () {
     SoundOK();
-    let lista, contador = 0;
-    let datosGuardados = localStorage.getItem("ranking_local");
+    let lista = [];
+    let datosGuardados = localStorage.getItem(`ranking_nivel_${button}`);
     if (datosGuardados) {
       lista = JSON.parse(datosGuardados);
       console.log("Cargando datos desde LocalStorage");
     }
+
     let fondo = game.add.sprite(0, 0, "fondoR");
     fondo.width = ANCHO_MENU;
     fondo.height = ALTO_MENU;
-    let TextButton = game.add.text(ANCHO_MENU * 0.5, ALTO_MENU * 0.35, 'Level '+ String(button) +" data",{fill: "#000000", font: "bold 24px Arial",align: "center",},);
-    TextButton.anchor.setTo(0.5);
-    if (lista && lista.length > 0){
-      lista.forEach((entrada)=>{
-        if(entrada.nivel == button){
-          game.add.text(
-            100,
-            100 + 50 * contador,
-            `${contador + 1}. ${entrada.nombre}: ${entrada.puntos} points in ${entrada.tiempo} seconds`,
-            {
-              fill: "#000000",
-              font: "bold 24px Arial",
-              align: "center",
-            },
-          );
-          contador ++;
-        }
+
+    // let TextButton = game.add.text(
+    //   ANCHO_MENU * 0.5,
+    //   ALTO_MENU * 0.1,
+    //   "Level " + String(button) + " data",
+    //   { fill: "#000000", font: "bold 24px Arial", align: "center" },
+    // );
+    // TextButton.anchor.setTo(0.5);
+
+    if (lista.length > 0) {
+      lista.forEach((entrada, index) => {
+        game.add.text(
+          ANCHO_MENU * 0.3,
+          ALTO_MENU * 0.4 + 40 * index,
+          `${index + 1}. ${entrada.nombre}: ${entrada.puntos} pts en ${entrada.tiempo}s`,
+          { fill: "#000000", font: "20px Arial" },
+        );
       });
+    } else {
+      let noData = game.add.text(
+        ANCHO_MENU * 0.5,
+        ALTO_MENU * 0.5,
+        "No hay datos para este nivel",
+        { fill: "#000000", font: "bold 20px Arial", align: "center" },
+      );
+      noData.anchor.setTo(0.5);
     }
+
     let botonRanking = game.add.button(
-    game.world.width * 0.4,
-    game.world.height * 0.8,
-    "volver",
-    this.volverRanking,
-    this,
+      game.world.width * 0.5,
+      game.world.height * 0.9,
+      "volver",
+      this.volverRanking,
+      this,
     );
+    botonRanking.anchor.setTo(0.5);
   },
-  volverRanking: function(){
+  volverRanking: function () {
     SoundOK();
     game.state.start("Ranking");
-  }
+  },
 };
 
 let game = new Phaser.Game(ANCHO_MENU, ALTO_MENU, Phaser.CANVAS, "game");
