@@ -297,6 +297,82 @@ class Tetromino {
   }
 }
 
+class ghostTetromino {
+  //clase del ghost tetromino
+  constructor(tetris) {
+    this.tetris = tetris;
+    this.blocks = [];
+    this.cells = [];
+    this.shape = null;
+  }
+
+  renderGhostBlock() {
+    // dibuja el bloque ghost
+    let g = game.add.graphics(0, 0);
+    g.beginFill(0xffffff, 0.25); // para que aparezca transparente
+    let m = 2; // Margen ligeramente mayor para que parezca más pequeña
+    g.drawRect(m, m, BLOCKSIZE - 2 * m, BLOCKSIZE - 2 * m);
+    g.endFill();
+    return g;
+  }
+
+  destroyGraphics() {
+    //borrar la silueta del anterior
+    for (let i = 0; i < this.blocks.length; i++) {
+      if (this.blocks[i]) {
+        this.blocks[i].destroy();
+      }
+    }
+    this.blocks = [];
+  }
+
+  updatePosition(currentTetromino) {
+    //reposiciona la pieza ghost
+    this.destroyGraphics();
+
+    this.shape = currentTetromino.shape;
+    this.cells = [];
+
+    for (let i = 0; i < currentTetromino.cells.length; i++) {
+      //copia las coordenadas actuales de la pieza real
+      this.cells.push([
+        currentTetromino.cells[i][0],
+        currentTetromino.cells[i][1],
+      ]);
+    }
+
+    let canDrop = true; //simula la caida de la pieza
+    while (canDrop) {
+      for (let i = 0; i < this.cells.length; i++) {
+        let nextY = this.cells[i][1] + 1;
+        // Si sale del tablero o toca una pieza ocupada...
+        if (
+          nextY >= NUMBLOCKS_Y ||
+          this.tetris.scene[this.cells[i][0]][nextY] === OCCUPIED
+        ) {
+          canDrop = false;
+          break;
+        }
+      }
+      if (canDrop) {
+        for (let i = 0; i < this.cells.length; i++) {
+          this.cells[i][1]++;
+        }
+      }
+    }
+
+    for (let i = 0; i < this.cells.length; i++) {
+      // se dibuja la pieza ghost
+      let x = this.cells[i][0];
+      let y = this.cells[i][1];
+      let b = this.renderGhostBlock();
+      b.x = x * BLOCKSIZE;
+      b.y = y * BLOCKSIZE;
+      this.blocks.push(b);
+    }
+  }
+}
+
 let gameState = {
   preload: loadGame,
   create: resetGame,
@@ -354,7 +430,7 @@ function unrenderBlockPreview() {
 
 // Elements for the game
 
-let tetromino, theTetris;
+let tetromino, theTetris, ghost;
 let cursors, keyRotate, keyRestart, keyMenu;
 let gameOverState = false;
 let nextForma = null;
@@ -370,7 +446,7 @@ const display_combo = document.getElementById("combo");
 const display_points = document.getElementById("puntos");
 const display_lines = document.getElementById("lines");
 const Player_name = document.getElementById("player");
-const Player_points = document.getElementById("puntos");
+
 Player_name.addEventListener("click", function () {
   let newName = prompt("Give new name: ", Player_name.textContent);
   if (newName !== null && newName.trim() !== "") {
@@ -387,7 +463,7 @@ function prepareLevelToPlay() {
     try {
       levelConfig = JSON.parse(nivelTexto);
 
-      //n_block_types controla el limite superior del número aleatorio que se genera para elegir la forma de la pieza, 
+      //n_block_types controla el limite superior del número aleatorio que se genera para elegir la forma de la pieza,
       // así que lo ajustamos al número de formas definidas en el nivel, para permitir niveles con menos o más formas segun queramos.
       //Dichas formas han de estar predefinidas en el constructor de Tetromino.
       n_block_types = levelConfig.NumeroTetrominos;
@@ -459,6 +535,7 @@ function resetGame() {
   keyRotate = game.input.keyboard.addKey(Phaser.Keyboard.UP);
   keyRestart = game.input.keyboard.addKey(Phaser.Keyboard.R);
   keyMenu = game.input.keyboard.addKey(Phaser.Keyboard.T);
+  keyHardDrop = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
   // timer
   // IMPORTANTE: si venimos de un game over, el Timer andará pausado.
@@ -467,7 +544,7 @@ function resetGame() {
   timer.removeAll();
   timer.resume();
   loop = timer.loop(fall_delay, fall, this);
-
+  ghost = new ghostTetromino(theTetris);
   spawn();
 }
 
@@ -507,7 +584,9 @@ function spawn() {
   let conflict = tetromino.create(start_x, start_y);
 
   if (conflict) setGameOver(true);
+  else if (ghost) ghost.updatePosition(tetromino);
 }
+
 function manageRanking() {
   let datosCargados = localStorage.getItem("ranking_local");
   let lista;
@@ -521,9 +600,9 @@ function manageRanking() {
 
   let nuevaEntrada = {
     nombre: Player_name.textContent,
-    puntos: parseInt(Player_points.textContent) || 0,
-    nivel : levelToPlay,
-    tiempo: Math.round(timer.seconds)
+    puntos: parseInt(display_points.textContent) || 0,
+    nivel: levelToPlay,
+    tiempo: Math.round(timer.seconds),
   };
 
   lista.push(nuevaEntrada);
@@ -545,10 +624,11 @@ function setGameOver(on) {
     manageRanking();
     timer.pause();
     makeShade(0.65);
-    if (puntosNecesarios <= Player_points.textContent) {
+    if (puntosNecesarios <= points) {
       soundGameOver.play();
       soundGameOver.volume = 0.4;
       display_points.textContent = points.toString();
+
       centerText = game.add.text(
         game.world.centerX,
         game.world.centerY,
@@ -602,7 +682,7 @@ function makeShade(alpha) {
 
 // Bucle de actualización para leer input y mover la pieza
 function updateGame() {
-   if (points >= puntosNecesarios) {
+  if (points >= puntosNecesarios) {
     PartidaGanada();
   }
   if (isPaused) return;
@@ -616,6 +696,7 @@ function updateGame() {
     return;
   }
 
+  let moved = false;
   if (
     cursors.left.isDown &&
     tetromino.canMove(tetromino.slide.bind(tetromino), "left")
@@ -625,6 +706,7 @@ function updateGame() {
       tetromino.slideCenter.bind(tetromino),
       "left",
     );
+    moved = true;
   } else if (
     cursors.right.isDown &&
     tetromino.canMove(tetromino.slide.bind(tetromino), "right")
@@ -634,6 +716,7 @@ function updateGame() {
       tetromino.slideCenter.bind(tetromino),
       "right",
     );
+    moved = true;
   } else if (
     cursors.down.isDown &&
     tetromino.canMove(tetromino.slide.bind(tetromino), "down")
@@ -643,10 +726,20 @@ function updateGame() {
       tetromino.slideCenter.bind(tetromino),
       "down",
     );
+    moved = true;
   } else if (keyRotate.isDown) {
     // O piece rotation is pointless, but harmless
-    if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino)))
+    if (tetromino.canMoveRotate(tetromino.rotate.bind(tetromino))) {
       tetromino.moveRotate(tetromino.rotate.bind(tetromino), null, "clockwise");
+      moved = true;
+    }
+  } else if (keyHardDrop.isDown) {
+    caidaTotal();
+    moved = true;
+  }
+
+  if (moved && ghost) {
+    ghost.updatePosition(tetromino);
   }
 
   currentMovementTimer = 0;
@@ -684,11 +777,10 @@ function checkLines(candidateLines) {
     }
   }
   if (collapsed.length) {
-    animacionTablero(collapse.length);
+    animacionTablero(collapsed.length);
     collapse(collapsed);
     lines_done += collapsed.length;
     points += 10 * collapsed.length;
-    display_lines.textContent = lines_done.toString();
     if (collapsed.length == 1 || collapsed.length == 2) {
       singleLine.play();
       if (collapsed.length == 2) {
@@ -697,7 +789,6 @@ function checkLines(candidateLines) {
       } else if (collapsed.length == 1 && combo != 0) {
         combo += 1;
       }
-      //display_points.textContent = points.toString();
     } else if (collapsed.length == 4) {
       fulltetris.play();
       fulltetris.volume = 0.7;
@@ -709,11 +800,12 @@ function checkLines(candidateLines) {
       points += 15;
       combo += 3;
     }
-    display_points.textContent = points.toString();
   }
   if (combo != 0) {
     points += combo * 10;
   }
+  display_lines.textContent = lines_done.toString();
+  display_points.textContent = points.toString();
   display_combo.textContent = combo.toString();
   return collapsed.length > 0;
 }
@@ -817,31 +909,46 @@ function returnMenu() {
   for (const h of HUD) {
     h.style.display = "none";
   }
-    for (const c of CONTROLES) {
+  for (const c of CONTROLES) {
     c.style.display = "none";
   }
   game.scale.setGameSize(window.innerWidth * 0.85, window.innerHeight * 0.85);
   game.state.start("Menu");
-};
-
-function animacionTablero(candidateLines){
-  let intensidad=0;
-  let duracion=0;
-  if ( candidateLines ==1){
-    intensidad=0.05;
-    duracion=100; //0.1 segundos 
-  }
-  else if(candidateLines==2) {
-    intensidad=0.1;
-    duracion=200;
-  }
-  else if(candidateLines>=3) {
-    intensidad=0.12;
-    duracion=300;
-  }
-  game.camera.shake(intensidad,duracion);
 }
 
-function PartidaGanada(){
-  if (!gameOverState){setGameOver(true);}
+function animacionTablero(candidateLines) {
+  let intensidad = 0;
+  let duracion = 0;
+  if (candidateLines == 1) {
+    intensidad = 0.05;
+    duracion = 100; //0.1 segundos
+  } else if (candidateLines == 2) {
+    intensidad = 0.1;
+    duracion = 200;
+  } else if (candidateLines >= 3) {
+    intensidad = 0.12;
+    duracion = 300;
+  }
+  game.camera.shake(intensidad, duracion);
+}
+
+function caidaTotal() {
+  if (gameOverState || isPaused) return;
+  let droppedLines = 0;
+
+  while (tetromino.canMove(tetromino.slide.bind(tetromino), "down")) {
+    tetromino.move(
+      tetromino.slide.bind(tetromino),
+      tetromino.slideCenter.bind(tetromino),
+      "down",
+    );
+    droppedLines++;
+  }
+  lockTetromino();
+}
+
+function PartidaGanada() {
+  if (!gameOverState) {
+    setGameOver(true);
+  }
 }
