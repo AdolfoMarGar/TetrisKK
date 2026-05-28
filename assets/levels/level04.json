@@ -15,6 +15,5 @@
     "9": "0x228b22",
     "10": "0xff1493"
   },
-  "NumeroTetrominos": 11,
-  "tiempoLimite": 120000
+  "NumeroTetrominos": 11
 }

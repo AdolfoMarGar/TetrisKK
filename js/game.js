@@ -15,6 +15,9 @@ let levelsData = [
 ];
 const btnPausa = document.getElementById("btn_pausa");
 const btnMute = document.getElementById("btn-mute-html");
+const display_timerLimit = document.getElementById("timerLimit");
+const display_pointsGoal = document.getElementById("puntosGoal");
+
 let yaRotate = false;
 let yaDrop = false;
 let yaPausado = false;
@@ -516,6 +519,13 @@ function prepareLevelToPlay() {
       puntosNecesarios = levelConfig.puntosNecesarios;
       numblocks_x = levelConfig.bloquesAnchoJugable;
       gameWidth = numblocks_x * BLOCKSIZE;
+      if (levelToPlay == 3) {
+        timerLimit = levelConfig.tiempoLimite;
+        display_timerLimit.style.display = "inline";
+      } else {
+        display_timerLimit.style.display = "none";
+      }
+      display_pointsGoal.textContent = puntosNecesarios.toString();
       game.scale.setGameSize(gameWidth + gameWidthExtra, gameHeight);
 
       for (let id in levelConfig.coloresPiezas) {
@@ -695,6 +705,25 @@ function setGameOver(on) {
           align: "center",
         },
       );
+    } else if (levelToPlay == 3 && timerLevel >= timerLimit) {
+      display_points.textContent = points.toString();
+      soundGameOver.play();
+      soundGameOver.volume = 0.4;
+      centerText = game.add.text(
+        game.world.centerX,
+        game.world.centerY,
+        "GAME OVER BECAUSE TIME IS UP\nPress R to restart\nPress T to return\nto the Menu\n\nTotal Points: " +
+          points.toString() +
+          "\nLines Destroyed: " +
+          lines_done.toString() +
+          "\nPlayer: " +
+          Player_name.textContent,
+        {
+          font: "bold 32px system-ui, -apple-system, Segoe UI, Roboto, Arial",
+          fill: "#ffffff",
+          align: "center",
+        },
+      );
     } else {
       display_points.textContent = points.toString();
       soundGameOver.play();
@@ -735,6 +764,9 @@ function makeShade(alpha) {
 function updateGame() {
   if (points >= puntosNecesarios) {
     PartidaGanada();
+  }
+  if (levelToPlay == 3 && timerLevel >= timerLimit) {
+    setGameOver(true);
   }
   btnPausa.style.backgroundColor = isPaused ? "#0d79ed" : "#ffffff";
   btnPausa.innerText = isPaused ? "CONTINUE" : "PAUSE";
